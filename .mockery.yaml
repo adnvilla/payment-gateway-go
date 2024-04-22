@@ -1,20 +1,26 @@
 with-expecter: true
 packages:
-    github.com/adnvilla/src/application/use_cases:
+    github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/application/usecase:
         config:
             with-expecter: true
             all: true      
-            dir: "./src/application/use_cases/mock"
+            dir: "./src/bounded_context/payment_service/application/usecase/mock"
             outpkg: mock
-    github.com/adnvilla/payment-gateway-go/src/domain/repository:
+    github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/repository:
         config:
             with-expecter: true
             all: true      
-            dir: "./src/domain/repository/mock"
+            dir: "./src/bounded_context/payment_service/domain/repository/mock"
             outpkg: mock
-    github.com/adnvilla/payment-gateway-go/src/domain/service:
+    github.com/adnvilla/payment-gateway-go/src/bounded_context/refund_service/application/usecase:
         config:
             with-expecter: true
             all: true      
-            dir: "./src/domain/service/mock"
+            dir: "./src/bounded_context/refund_service/application/usecase/mock"
+            outpkg: mock
+    github.com/adnvilla/payment-gateway-go/src/bounded_context/refund_service/domain/repository:
+        config:
+            with-expecter: true
+            all: true      
+            dir: "./src/bounded_context/refund_service/domain/repository/mock"
             outpkg: mock
