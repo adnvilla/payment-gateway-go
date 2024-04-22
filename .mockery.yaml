@@ -1,0 +1,20 @@
+with-expecter: true
+packages:
+    github.com/adnvilla/src/application/use_cases:
+        config:
+            with-expecter: true
+            all: true      
+            dir: "./src/application/use_cases/mock"
+            outpkg: mock
+    github.com/adnvilla/payment-gateway-go/src/domain/repository:
+        config:
+            with-expecter: true
+            all: true      
+            dir: "./src/domain/repository/mock"
+            outpkg: mock
+    github.com/adnvilla/payment-gateway-go/src/domain/service:
+        config:
+            with-expecter: true
+            all: true      
+            dir: "./src/domain/service/mock"
+            outpkg: mock
