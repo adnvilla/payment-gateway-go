@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"testing"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,10 +40,4 @@ func MockJsonPost(c *gin.Context, content interface{}) {
 	// the bytes buffer though doesn't implement io.Closer,
 	// so you wrap it in a no-op closer
 	c.Request.Body = io.NopCloser(bytes.NewBuffer(jsonbytes))
-}
-
-func TestMockJson(t *testing.T) {
-	w := httptest.NewRecorder()
-	ctx := GetTestGinContext(w)
-	MockJsonPost(ctx, nil)
 }
