@@ -1,63 +1,23 @@
 package handler
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"testing"
 
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/refund_service/application/usecase"
 	usecasemock "github.com/adnvilla/payment-gateway-go/src/bounded_context/refund_service/application/usecase/mock"
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/refund_service/interfaces/dto"
-	"github.com/gin-gonic/gin"
+	"github.com/adnvilla/payment-gateway-go/src/pkg/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-func getTestGinContext(w *httptest.ResponseRecorder) *gin.Context {
-	gin.SetMode(gin.TestMode)
-
-	ctx, _ := gin.CreateTestContext(w)
-	ctx.Request = &http.Request{
-		Header: make(http.Header),
-		URL:    &url.URL{},
-	}
-
-	return ctx
-}
-
-func mockJsonPost(c *gin.Context, content interface{}) {
-	c.Request.Method = "POST"
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	if content == nil {
-		return
-	}
-
-	jsonbytes, err := json.Marshal(content)
-	if err != nil {
-		panic(err)
-	}
-
-	// the request body must be an io.ReadCloser
-	// the bytes buffer though doesn't implement io.Closer,
-	// so you wrap it in a no-op closer
-	c.Request.Body = io.NopCloser(bytes.NewBuffer(jsonbytes))
-}
-
-func TestMockJson(t *testing.T) {
-	w := httptest.NewRecorder()
-	ctx := getTestGinContext(w)
-	mockJsonPost(ctx, nil)
-}
-
 func TestCreateRefund(t *testing.T) {
 	w := httptest.NewRecorder()
-	ctx := getTestGinContext(w)
+	ctx := testutils.GetTestGinContext(w)
 
 	// Fixture
 	body := dto.CreateRefundRequest{}
@@ -65,7 +25,7 @@ func TestCreateRefund(t *testing.T) {
 	expectedStatus := http.StatusOK
 	response := dto.CreateRefundResponse{}
 
-	mockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body)
 
 	usecaseMock := usecasemock.NewMockCreateRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateRefundOutput{}, nil)
@@ -83,7 +43,7 @@ func TestCreateRefund(t *testing.T) {
 
 func TestCreateRefundFail(t *testing.T) {
 	w := httptest.NewRecorder()
-	ctx := getTestGinContext(w)
+	ctx := testutils.GetTestGinContext(w)
 
 	// Fixture
 	body := dto.CreateRefundRequest{}
@@ -91,7 +51,7 @@ func TestCreateRefundFail(t *testing.T) {
 	expectedStatus := http.StatusBadRequest
 	response := dto.CreateRefundResponse{}
 
-	mockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body)
 
 	usecaseMock := usecasemock.NewMockCreateRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateRefundOutput{}, fmt.Errorf("some error"))
@@ -109,7 +69,7 @@ func TestCreateRefundFail(t *testing.T) {
 
 func TestGetRefund(t *testing.T) {
 	w := httptest.NewRecorder()
-	ctx := getTestGinContext(w)
+	ctx := testutils.GetTestGinContext(w)
 
 	// Fixture
 	body := dto.GetRefundRequest{}
@@ -117,7 +77,7 @@ func TestGetRefund(t *testing.T) {
 	expectedStatus := http.StatusOK
 	response := dto.GetRefundResponse{}
 
-	mockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body)
 
 	usecaseMock := usecasemock.NewMockGetRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetRefundOutput{}, nil)
@@ -135,7 +95,7 @@ func TestGetRefund(t *testing.T) {
 
 func TestGetRefundFail(t *testing.T) {
 	w := httptest.NewRecorder()
-	ctx := getTestGinContext(w)
+	ctx := testutils.GetTestGinContext(w)
 
 	// Fixture
 	body := dto.GetRefundRequest{}
@@ -143,7 +103,7 @@ func TestGetRefundFail(t *testing.T) {
 	expectedStatus := http.StatusBadRequest
 	response := dto.GetRefundResponse{}
 
-	mockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body)
 
 	usecaseMock := usecasemock.NewMockGetRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetRefundOutput{}, fmt.Errorf("some error"))

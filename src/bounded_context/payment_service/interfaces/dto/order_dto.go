@@ -1,4 +1,5 @@
 package dto
 
-type OrderDto struct {
-}
+type CreateOrderRequest struct{}
+
+type CreateOrderResponse struct{}
