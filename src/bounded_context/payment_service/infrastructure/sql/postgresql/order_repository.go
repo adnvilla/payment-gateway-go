@@ -2,7 +2,7 @@ package postgresql
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/repository"
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/vo"
@@ -21,10 +21,18 @@ func NewOrderRepository(db *gorm.DB) repository.OrderRepository {
 }
 
 func (r *orderRepository) CreateOrder(ctx context.Context, order vo.CreateOrderDetail) error {
-	orderModel := models.OrderModel{}
+	orderModel := models.CreateOrder{
+		Amount:       order.Amount,
+		Currency:     order.Currency,
+		ProviderType: int(order.ProviderType),
+		CreateOrderProvider: models.CreateOrderProvider{
+			ProviderType: int(order.ProviderType),
+			Payload:      order.Payload,
+		},
+	}
 	result := r.db.Create(&orderModel)
 	if result.Error != nil {
-		return errors.New("have a issue with consult DB")
+		return fmt.Errorf("have a issue with consult DB:", result.Error)
 	}
 
 	return nil

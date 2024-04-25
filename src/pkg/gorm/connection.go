@@ -31,10 +31,9 @@ func getConnection() *gorm.DB {
 		user := os.Getenv("PAYMENT_GATEWAY_POSTGRES_USER")
 		pwd := os.Getenv("PAYMENT_GATEWAY_POSTGRES_PASSWORD")
 		dbName := os.Getenv("PAYMENT_GATEWAY_POSTGRES_DBNAME")
-		env := os.Getenv("PAYMENT_GATEWAY_ENV")
 
-		dsn := "host=%v user=%v password=%v dbname=%v_%v port=5432 sslmode=disable"
-		db, err := gorm.Open(postgres.Open(fmt.Sprintf(dsn, host, user, pwd, dbName, env)), cfg)
+		dsn := "host=%v user=%v password=%v dbname=%v port=5432 sslmode=disable"
+		db, err := gorm.Open(postgres.Open(fmt.Sprintf(dsn, host, user, pwd, dbName)), cfg)
 		if err != nil {
 			log.Fatal("error: gorm db not found:", err)
 		}

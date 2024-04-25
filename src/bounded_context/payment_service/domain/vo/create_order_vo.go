@@ -10,6 +10,7 @@ type CreateOrder struct {
 
 type CreateOrderDetail struct {
 	Id           string
+	OrderId      string
 	ProviderType shared_domain.ProviderType
 	Amount       string
 	Currency     string

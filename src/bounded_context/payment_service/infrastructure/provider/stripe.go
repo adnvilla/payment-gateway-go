@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -48,11 +49,18 @@ func (s *stripeProvider) CreateOrder(ctx context.Context, createOrder vo.CreateO
 		return vo.CreateOrderDetail{}, err
 	}
 
+	payload, err := json.Marshal(result)
+	if err != nil {
+		return vo.CreateOrderDetail{}, err
+	}
+
 	return vo.CreateOrderDetail{
-		Id:        result.ID,
-		Amount:    strconv.FormatInt(result.Amount, 10),
-		CreatedAt: result.Created,
-		Currency:  string(result.Currency),
+		OrderId:      result.ID,
+		Amount:       strconv.FormatInt(result.Amount, 10),
+		CreatedAt:    result.Created,
+		Currency:     string(result.Currency),
+		ProviderType: createOrder.ProviderType,
+		Payload:      string(payload),
 	}, nil
 }
 
