@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/service"
+	paypal_sdk "github.com/adnvilla/payment-gateway-go/src/pkg/paypal"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/shared_domain"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/stripe"
 )
@@ -20,10 +21,14 @@ func NewGetProviderFactory() service.GetProviderService {
 func (f *factory) GetProviderClient(ctx context.Context, provider shared_domain.ProviderType) (service.OrderProviderService, error) {
 	switch provider {
 	case shared_domain.ProviderType_Stripe:
-		client := stripe.GetStripeClient(os.Getenv("PAYMENT_GATEWAY_PROVIDER_STRIPE_KEY"))
+		key := os.Getenv("PAYMENT_GATEWAY_PROVIDER_STRIPE_KEY")
+		client := stripe.GetStripeClient(key)
 		return NewStripeProvider(client.PaymentIntents), nil
 	case shared_domain.ProviderType_Paypal:
-		return nil, fmt.Errorf("error: provider not supported: %v", provider)
+		clientid := os.Getenv("PAYMENT_GATEWAY_PROVIDER_PAYPAL_CLIENTID")
+		secretid := os.Getenv("PAYMENT_GATEWAY_PROVIDER_PAYPAL_SECRETID")
+		client := paypal_sdk.GetPaypalClient(clientid, secretid)
+		return NewPaypalProvider(client), nil
 	default:
 		return nil, fmt.Errorf("error: provider not supported: %v", provider)
 	}

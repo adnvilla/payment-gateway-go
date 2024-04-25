@@ -23,15 +23,13 @@ type CreateOrderDetail struct {
 }
 
 type CaptureOrder struct {
-	OrderId      uuid.UUID
+	OrderId      string
 	ProviderType shared_domain.ProviderType
 }
 
 type CaptureOrderDetail struct {
-	Id           string
-	ProviderType shared_domain.ProviderType
-	Amount       string
-	Currency     string
-	CreatedAt    int64
-	Payload      string
+	Id             string
+	CaptureOrderId string
+	ProviderType   shared_domain.ProviderType
+	Payload        string
 }

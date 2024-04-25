@@ -39,7 +39,7 @@ func TestOrderRepository(t *testing.T) {
 	sqlRegex2 := `INSERT INTO "create_order_providers"`
 	dbMock.ExpectBegin()
 	dbMock.ExpectExec(sqlRegex).WithArgs(AnyString{}, AnyTime{}, input.Amount, input.Currency, input.ProviderType).WillReturnResult(sqlmock.NewResult(1, 1))
-	dbMock.ExpectExec(sqlRegex2).WithArgs(AnyString{}, AnyTime{}, AnyString{}, input.ProviderType, AnyString{}).WillReturnResult(sqlmock.NewResult(1, 1))
+	dbMock.ExpectExec(sqlRegex2).WithArgs(AnyString{}, AnyTime{}, AnyString{}, AnyString{}, input.ProviderType, AnyString{}).WillReturnResult(sqlmock.NewResult(1, 1))
 	dbMock.ExpectCommit()
 	repo := NewOrderRepository(db)
 

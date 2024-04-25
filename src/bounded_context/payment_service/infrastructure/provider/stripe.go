@@ -11,16 +11,16 @@ import (
 	"github.com/stripe/stripe-go/v78"
 )
 
-type StripProvider interface {
+type StripeProvider interface {
 	New(params *stripe.PaymentIntentParams) (*stripe.PaymentIntent, error)
 	Capture(id string, params *stripe.PaymentIntentCaptureParams) (*stripe.PaymentIntent, error)
 }
 
 type stripeProvider struct {
-	stripeClient StripProvider
+	stripeClient StripeProvider
 }
 
-func NewStripeProvider(stripProvider StripProvider) service.OrderProviderService {
+func NewStripeProvider(stripProvider StripeProvider) service.OrderProviderService {
 	return &stripeProvider{
 		stripeClient: stripProvider,
 	}
@@ -32,7 +32,7 @@ func (s *stripeProvider) CreateOrder(ctx context.Context, createOrder vo.CreateO
 		return vo.CreateOrderDetail{}, err
 	}
 
-	currency, err := parseCurrency(createOrder.Currency)
+	currency, err := parseStripeCurrency(createOrder.Currency)
 	if err != nil {
 		return vo.CreateOrderDetail{}, err
 	}
@@ -66,20 +66,17 @@ func (s *stripeProvider) CreateOrder(ctx context.Context, createOrder vo.CreateO
 
 func (s *stripeProvider) CaptureOrder(ctx context.Context, captureOrder vo.CaptureOrder) (vo.CaptureOrderDetail, error) {
 	params := &stripe.PaymentIntentCaptureParams{}
-	result, err := s.stripeClient.Capture(captureOrder.OrderId.String(), params)
+	result, err := s.stripeClient.Capture(captureOrder.OrderId, params)
 	if err != nil {
 		return vo.CaptureOrderDetail{}, err
 	}
 
 	return vo.CaptureOrderDetail{
-		Id:        result.ID,
-		Amount:    strconv.FormatInt(result.Amount, 10),
-		CreatedAt: result.Created,
-		Currency:  string(result.Currency),
+		Id: result.ID,
 	}, nil
 }
 
-func parseCurrency(c string) (stripe.Currency, error) {
+func parseStripeCurrency(c string) (stripe.Currency, error) {
 	switch c {
 	case "USD", "usd":
 		return stripe.CurrencyUSD, nil

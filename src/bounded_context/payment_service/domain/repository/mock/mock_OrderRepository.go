@@ -143,6 +143,63 @@ func (_c *MockOrderRepository_CreateOrder_Call) RunAndReturn(run func(context.Co
 	return _c
 }
 
+// GetOrderProvider provides a mock function with given fields: ctx, orderId
+func (_m *MockOrderRepository) GetOrderProvider(ctx context.Context, orderId uuid.UUID) (vo.CreateOrderDetail, error) {
+	ret := _m.Called(ctx, orderId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetOrderProvider")
+	}
+
+	var r0 vo.CreateOrderDetail
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) (vo.CreateOrderDetail, error)); ok {
+		return rf(ctx, orderId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) vo.CreateOrderDetail); ok {
+		r0 = rf(ctx, orderId)
+	} else {
+		r0 = ret.Get(0).(vo.CreateOrderDetail)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = rf(ctx, orderId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockOrderRepository_GetOrderProvider_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetOrderProvider'
+type MockOrderRepository_GetOrderProvider_Call struct {
+	*mock.Call
+}
+
+// GetOrderProvider is a helper method to define mock.On call
+//   - ctx context.Context
+//   - orderId uuid.UUID
+func (_e *MockOrderRepository_Expecter) GetOrderProvider(ctx interface{}, orderId interface{}) *MockOrderRepository_GetOrderProvider_Call {
+	return &MockOrderRepository_GetOrderProvider_Call{Call: _e.mock.On("GetOrderProvider", ctx, orderId)}
+}
+
+func (_c *MockOrderRepository_GetOrderProvider_Call) Run(run func(ctx context.Context, orderId uuid.UUID)) *MockOrderRepository_GetOrderProvider_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID))
+	})
+	return _c
+}
+
+func (_c *MockOrderRepository_GetOrderProvider_Call) Return(_a0 vo.CreateOrderDetail, _a1 error) *MockOrderRepository_GetOrderProvider_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockOrderRepository_GetOrderProvider_Call) RunAndReturn(run func(context.Context, uuid.UUID) (vo.CreateOrderDetail, error)) *MockOrderRepository_GetOrderProvider_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewMockOrderRepository creates a new instance of MockOrderRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockOrderRepository(t interface {

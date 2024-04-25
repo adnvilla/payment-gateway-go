@@ -8,7 +8,6 @@ import (
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/vo"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/shared_domain"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/stripe/mock"
-	uuid "github.com/satori/go.uuid"
 	"github.com/stripe/stripe-go/v78"
 	"github.com/stripe/stripe-go/v78/paymentintent"
 	"go.uber.org/mock/gomock"
@@ -47,16 +46,16 @@ func TestStripeProviderCaptureOrder(t *testing.T) {
 	// Create a mock stripe backend
 	mockBackend := mock.NewMockBackend(mockController)
 	c := paymentintent.Client{B: mockBackend, Key: "key_123"}
-	id := uuid.NewV4()
+	id := "clientId"
 
 	// Set up a mock call
-	mockBackend.EXPECT().Call("POST", fmt.Sprintf("/v1/payment_intents/%s/capture", id.String()), gomock.Any(), gomock.Any(), gomock.Any()).
+	mockBackend.EXPECT().Call("POST", fmt.Sprintf("/v1/payment_intents/%s/capture", id), gomock.Any(), gomock.Any(), gomock.Any()).
 		// Return nil error
 		Return(nil).
 		Do(func(method string, path string, key string, params stripe.ParamsContainer, v *stripe.PaymentIntent) {
 			// Set the return value for the method
 			*v = stripe.PaymentIntent{
-				ID: id.String(),
+				ID: id,
 			}
 		}).Times(1)
 
@@ -87,7 +86,7 @@ func TestParseCurrency(t *testing.T) {
 		// when executing `go test -v`.
 		testname := fmt.Sprintf("%v,%v", tt.currency, tt.expected)
 		t.Run(testname, func(t *testing.T) {
-			actualCurrency, err := parseCurrency(tt.currency)
+			actualCurrency, err := parseStripeCurrency(tt.currency)
 			if !tt.expectedErr && err != nil {
 				t.Errorf("Unexpected err but got err: %v", err)
 			}

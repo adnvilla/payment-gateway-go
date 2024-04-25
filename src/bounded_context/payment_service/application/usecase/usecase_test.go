@@ -19,13 +19,18 @@ func TestCaptureOrderUseCase(t *testing.T) {
 	id := uuid.NewV4()
 	input := CaptureOrderInput{}
 
+	i := vo.CreateOrderDetail{
+		OrderId: "orderproviderid",
+	}
+
 	info := vo.CaptureOrder{
-		OrderId:      input.OrderId,
+		OrderId:      i.OrderId,
 		ProviderType: input.ProviderType,
 	}
 	infoDetail := vo.CaptureOrderDetail{}
 
 	mockRepository.EXPECT().CaptureOrder(ctx, infoDetail).Return(id, nil).Once()
+	mockRepository.EXPECT().GetOrderProvider(ctx, input.OrderId).Return(i, nil).Once()
 	mockService.EXPECT().CaptureOrder(ctx, info).Return(infoDetail, nil)
 
 	u := NewCaptureOrderUseCase(mockService, mockRepository)

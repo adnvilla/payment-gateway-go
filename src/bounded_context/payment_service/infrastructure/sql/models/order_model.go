@@ -16,7 +16,8 @@ type CreateOrder struct {
 
 type CreateOrderProvider struct {
 	gorm.Model
-	CreateOrderID uuid.UUID `gorm:"type:uuid"`
-	ProviderType  int
-	Payload       string
+	CreateOrderID   uuid.UUID `gorm:"type:uuid"`
+	ProviderOrderID string
+	ProviderType    int
+	Payload         string
 }

@@ -40,9 +40,15 @@ func NewCaptureOrderUseCase(service service.OrderProviderService, r repository.O
 }
 
 func (u *captureOrderUseCase) Handle(ctx context.Context, input CaptureOrderInput) (output CaptureOrderOutput, err error) {
+
+	order, err := u.orderRepository.GetOrderProvider(ctx, input.OrderId)
+	if err != nil {
+		return
+	}
+
 	info := vo.CaptureOrder{
-		OrderId:      input.OrderId,
-		ProviderType: input.ProviderType,
+		OrderId:      order.OrderId,
+		ProviderType: order.ProviderType,
 	}
 	output = CaptureOrderOutput{}
 	r, err := u.service.CaptureOrder(ctx, info)
@@ -56,8 +62,8 @@ func (u *captureOrderUseCase) Handle(ctx context.Context, input CaptureOrderInpu
 	}
 
 	output.Id = id
-	output.Amount = r.Amount
-	output.Currency = r.Currency
-	output.CreatedAt = r.CreatedAt
+	//output.Amount = r.Amount
+	//output.Currency = r.Currency
+	//output.CreatedAt = r.CreatedAt
 	return
 }

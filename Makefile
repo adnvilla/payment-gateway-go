@@ -9,6 +9,7 @@ build:
 	go build -o bin/payment-gateway-go-api main.go 
 
 run: build
+	source .env
 	./bin/payment-gateway-go-api
 
 test:
