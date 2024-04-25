@@ -5,7 +5,7 @@ package mock
 import (
 	context "context"
 
-	usecase "github.com/adnvilla/payment-gateway-go/src/bounded_context/refund_service/application/usecase"
+	usecase "github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/application/usecase"
 	mock "github.com/stretchr/testify/mock"
 )
 

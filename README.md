@@ -27,3 +27,13 @@ Para la generacion de mock (`brew install mockery`), ultilice:
 # Add Homebrew to your PATH
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+
+cat .env.dev > .env
+source .env
+
+brew install golang-migrate
+
+
+sudo apt-get install -y postgresql-client
+psql --version

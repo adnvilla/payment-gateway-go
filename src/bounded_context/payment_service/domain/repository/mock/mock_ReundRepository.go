@@ -5,7 +5,7 @@ package mock
 import (
 	context "context"
 
-	entity "github.com/adnvilla/payment-gateway-go/src/bounded_context/refund_service/domain/entity"
+	entity "github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/entity"
 	mock "github.com/stretchr/testify/mock"
 )
 

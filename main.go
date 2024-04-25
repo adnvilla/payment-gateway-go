@@ -1,10 +1,13 @@
 package main
 
 import (
-	paymentusecases "github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/application/usecase"
-	paymenthandlers "github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/interfaces/handler"
-	refundusecases "github.com/adnvilla/payment-gateway-go/src/bounded_context/refund_service/application/usecase"
-	refundhandlers "github.com/adnvilla/payment-gateway-go/src/bounded_context/refund_service/interfaces/handler"
+	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/application/usecase"
+	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/service"
+	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/infrastructure/provider"
+	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/infrastructure/sql/postgresql"
+	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/interfaces/handler"
+	"github.com/adnvilla/payment-gateway-go/src/pkg/gorm"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -27,17 +30,22 @@ func main() {
 
 func initializeEndpoints(routerV1 *gin.RouterGroup) {
 
-	createOrderUsecase := paymentusecases.NewCreateOrderUseCase()
-	captureOrderUsecase := paymentusecases.NewCaptureOrderUseCase()
+	db := gorm.GetConnection()
+	factory := provider.NewGetProviderFactory()
+	service := service.NewCreateOrderService(factory)
+	repository := postgresql.NewOrderRepository(db)
 
-	createRefundUsecase := refundusecases.NewCreateRefundUseCase()
-	getRefundUseCase := refundusecases.NewGetRefundUseCase()
+	createOrderUsecase := usecase.NewCreateOrderUseCase(service, repository)
+	captureOrderUsecase := usecase.NewCaptureOrderUseCase(service, repository)
 
-	paymentCreateOrderHandler := paymenthandlers.NewCreateOrderHandler(createOrderUsecase)
-	paymentCaptureOrderHandler := paymenthandlers.NewCaptureOrderHandler(captureOrderUsecase)
+	createRefundUsecase := usecase.NewCreateRefundUseCase()
+	getRefundUseCase := usecase.NewGetRefundUseCase()
 
-	refundCreateRefundHandler := refundhandlers.NewCreateRefundHandler(createRefundUsecase)
-	refundGetRefundHandler := refundhandlers.NewGetRefundHandler(getRefundUseCase)
+	paymentCreateOrderHandler := handler.NewCreateOrderHandler(createOrderUsecase)
+	paymentCaptureOrderHandler := handler.NewCaptureOrderHandler(captureOrderUsecase)
+
+	refundCreateRefundHandler := handler.NewCreateRefundHandler(createRefundUsecase)
+	refundGetRefundHandler := handler.NewGetRefundHandler(getRefundUseCase)
 
 	// Payments
 	routerV1.POST("/payments", paymentCreateOrderHandler.CreateOrder)

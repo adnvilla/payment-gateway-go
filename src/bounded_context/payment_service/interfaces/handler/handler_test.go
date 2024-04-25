@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/application/usecase"
 	usecasemock "github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/application/usecase/mock"
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/interfaces/dto"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/testutils"
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -78,6 +80,12 @@ func TestCaptureOrder(t *testing.T) {
 	response := dto.CaptureOrderResponse{}
 
 	testutils.MockJsonPost(ctx, body)
+	ctx.Params = []gin.Param{
+		{
+			Key:   "id",
+			Value: "order",
+		},
+	}
 
 	usecaseMock := usecasemock.NewMockCaptureOrderUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CaptureOrderOutput{}, nil)
@@ -104,6 +112,12 @@ func TestCaptureOrderFail(t *testing.T) {
 	response := dto.CaptureOrderResponse{}
 
 	testutils.MockJsonPost(ctx, body)
+	ctx.Params = []gin.Param{
+		{
+			Key:   "id",
+			Value: "order",
+		},
+	}
 
 	usecaseMock := usecasemock.NewMockCaptureOrderUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CaptureOrderOutput{}, fmt.Errorf("some error"))
@@ -111,6 +125,114 @@ func TestCaptureOrderFail(t *testing.T) {
 	// Act
 	handler := NewCaptureOrderHandler(usecaseMock)
 	handler.CaptureOrder(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestCreateRefund(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	body := dto.CreateRefundRequest{}
+	expected := dto.CreateRefundResponse{}
+	expectedStatus := http.StatusOK
+	response := dto.CreateRefundResponse{}
+
+	testutils.MockJsonPost(ctx, body)
+
+	usecaseMock := usecasemock.NewMockCreateRefundUseCase(t)
+	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateRefundOutput{}, nil)
+
+	// Act
+	handler := NewCreateRefundHandler(usecaseMock)
+	handler.CreateRefund(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestCreateRefundFail(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	body := dto.CreateRefundRequest{}
+	expected := dto.CreateRefundResponse{}
+	expectedStatus := http.StatusBadRequest
+	response := dto.CreateRefundResponse{}
+
+	testutils.MockJsonPost(ctx, body)
+
+	usecaseMock := usecasemock.NewMockCreateRefundUseCase(t)
+	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateRefundOutput{}, fmt.Errorf("some error"))
+
+	// Act
+	handler := NewCreateRefundHandler(usecaseMock)
+	handler.CreateRefund(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestGetRefund(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	body := dto.GetRefundRequest{}
+	expected := dto.GetRefundResponse{}
+	expectedStatus := http.StatusOK
+	response := dto.GetRefundResponse{}
+	params := url.Values{}
+	params.Add("charge_id", body.Charge)
+
+	testutils.MockJsonGet(ctx, params)
+
+	usecaseMock := usecasemock.NewMockGetRefundUseCase(t)
+	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetRefundOutput{}, nil)
+
+	// Act
+	handler := NewGetRefundHandler(usecaseMock)
+	handler.GetRefund(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestGetRefundFail(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	body := dto.GetRefundRequest{}
+	expected := dto.GetRefundResponse{}
+	expectedStatus := http.StatusBadRequest
+	response := dto.GetRefundResponse{}
+	params := url.Values{}
+	params.Add("charge_id", body.Charge)
+
+	testutils.MockJsonGet(ctx, params)
+
+	usecaseMock := usecasemock.NewMockGetRefundUseCase(t)
+	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetRefundOutput{}, fmt.Errorf("some error"))
+
+	// Act
+	handler := NewGetRefundHandler(usecaseMock)
+	handler.GetRefund(ctx)
 
 	// Assert
 	assert.EqualValues(t, expectedStatus, w.Code)

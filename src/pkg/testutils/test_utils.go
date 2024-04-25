@@ -41,3 +41,14 @@ func MockJsonPost(c *gin.Context, content interface{}) {
 	// so you wrap it in a no-op closer
 	c.Request.Body = io.NopCloser(bytes.NewBuffer(jsonbytes))
 }
+
+func MockJsonGet(c *gin.Context, params url.Values) {
+	c.Request.Method = "GET"
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	if params == nil {
+		return
+	}
+
+	c.Request.URL.RawQuery = params.Encode()
+}

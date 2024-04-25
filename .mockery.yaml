@@ -12,15 +12,9 @@ packages:
             all: true      
             dir: "./src/bounded_context/payment_service/domain/repository/mock"
             outpkg: mock
-    github.com/adnvilla/payment-gateway-go/src/bounded_context/refund_service/application/usecase:
+    github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/service:
         config:
             with-expecter: true
             all: true      
-            dir: "./src/bounded_context/refund_service/application/usecase/mock"
-            outpkg: mock
-    github.com/adnvilla/payment-gateway-go/src/bounded_context/refund_service/domain/repository:
-        config:
-            with-expecter: true
-            all: true      
-            dir: "./src/bounded_context/refund_service/domain/repository/mock"
+            dir: "./src/bounded_context/payment_service/domain/service/mock"
             outpkg: mock
