@@ -35,7 +35,7 @@ func (r *orderRepository) CreateOrder(ctx context.Context, order vo.CreateOrderD
 	}
 	result := r.db.Create(&orderModel)
 	if result.Error != nil {
-		return uuid.UUID{}, fmt.Errorf("have a issue with consult DB: %v", result.Error)
+		return uuid.UUID{}, fmt.Errorf("have a issue with insert DB CreateOrder: %v", result.Error)
 	}
 
 	return orderModel.ID, nil
@@ -51,7 +51,7 @@ func (r *orderRepository) CaptureOrder(ctx context.Context, order vo.CaptureOrde
 	}
 	result := r.db.Create(&captureModel)
 	if result.Error != nil {
-		return uuid.UUID{}, fmt.Errorf("have a issue with consult DB: %v", result.Error)
+		return uuid.UUID{}, fmt.Errorf("have a issue with insert DB CaptureOrder: %v", result.Error)
 	}
 
 	return captureModel.ID, nil
@@ -65,7 +65,7 @@ func (r *orderRepository) GetOrderProvider(ctx context.Context, order uuid.UUID)
 
 	result := r.db.Where("create_order_id = ?", order.String()).First(&orderProvider)
 	if result.Error != nil {
-		return vo.CreateOrderDetail{}, fmt.Errorf("have a issue with consult DB: %v", result.Error)
+		return vo.CreateOrderDetail{}, fmt.Errorf("have a issue with consult DB CreateOrderProvider: %v", result.Error)
 	}
 
 	return vo.CreateOrderDetail{
