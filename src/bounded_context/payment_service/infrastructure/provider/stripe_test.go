@@ -91,7 +91,7 @@ func TestParseCurrency(t *testing.T) {
 				t.Errorf("Unexpected err but got err: %v", err)
 			}
 			if !tt.expectedErr && string(actualCurrency) != tt.expected {
-				t.Errorf("got %v, want %v", tt.currency, tt.expected)
+				t.Errorf("got %v, want %v", actualCurrency, tt.expected)
 			}
 		})
 	}

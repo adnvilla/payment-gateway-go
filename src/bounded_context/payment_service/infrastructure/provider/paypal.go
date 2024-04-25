@@ -86,9 +86,9 @@ func (s *paypalProvider) CaptureOrder(ctx context.Context, captureOrder vo.Captu
 func parsePaypalCurrency(c string) (string, error) {
 	switch c {
 	case "USD", "usd":
-		return c, nil
+		return "USD", nil
 	case "MXN", "mxn":
-		return c, nil
+		return "MXN", nil
 	default:
 		return "", fmt.Errorf("currency not supported %v", c)
 	}

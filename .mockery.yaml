@@ -18,3 +18,9 @@ packages:
             all: true      
             dir: "./src/bounded_context/payment_service/domain/service/mock"
             outpkg: mock
+    github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/infrastructure/provider:
+        config:
+            with-expecter: true
+            all: true      
+            dir: "./src/bounded_context/payment_service/infrastructure/provider/mock"
+            outpkg: mock
