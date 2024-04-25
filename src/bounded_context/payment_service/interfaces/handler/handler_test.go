@@ -43,6 +43,29 @@ func TestCreateOrder(t *testing.T) {
 	assert.Equal(t, expected, response)
 }
 
+func TestCreateOrderFailBody(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	body := "{ shd }"
+	expected := dto.CreateOrderResponse{}
+	expectedStatus := http.StatusBadRequest
+	response := dto.CreateOrderResponse{}
+
+	testutils.MockJsonPost(ctx, body)
+
+	// Act
+	handler := NewCreateOrderHandler(nil)
+	handler.CreateOrder(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
 func TestCreateOrderFail(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := testutils.GetTestGinContext(w)
@@ -92,6 +115,35 @@ func TestCaptureOrder(t *testing.T) {
 
 	// Act
 	handler := NewCaptureOrderHandler(usecaseMock)
+	handler.CaptureOrder(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestCaptureOrderFailParameter(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	body := dto.CaptureOrderRequest{}
+	expected := dto.CaptureOrderResponse{}
+	expectedStatus := http.StatusBadRequest
+	response := dto.CaptureOrderResponse{}
+
+	testutils.MockJsonPost(ctx, body)
+	ctx.Params = []gin.Param{
+		{
+			Key:   "failId",
+			Value: "order",
+		},
+	}
+
+	// Act
+	handler := NewCaptureOrderHandler(nil)
 	handler.CaptureOrder(ctx)
 
 	// Assert
