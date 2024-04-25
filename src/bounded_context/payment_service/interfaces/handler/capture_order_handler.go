@@ -9,6 +9,7 @@ import (
 	errorshandle "github.com/adnvilla/payment-gateway-go/src/pkg/errors_handle"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/use_case"
 	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
 )
 
 type CaptureOrderHandler struct {
@@ -30,8 +31,17 @@ func (handler *CaptureOrderHandler) CaptureOrder(c *gin.Context) {
 		return
 	}
 
+	id, err := uuid.FromString(orderId)
+	if err != nil {
+		// Errs it will be customize with handle errors
+		c.JSON(http.StatusBadRequest, errorshandle.ErrorCustomize{
+			Error: fmt.Sprint(err),
+		})
+		return
+	}
+
 	input := usecase.CaptureOrderInput{
-		OrderId: orderId,
+		OrderId: id,
 	}
 
 	result, err := handler.usecase.Handle(c, input)

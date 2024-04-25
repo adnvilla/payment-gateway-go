@@ -7,6 +7,7 @@ import (
 	mockRepository "github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/repository/mock"
 	mockService "github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/service/mock"
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/vo"
+	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,6 +16,7 @@ func TestCaptureOrderUseCase(t *testing.T) {
 	mockService := mockService.NewMockOrderProviderService(t)
 	mockRepository := mockRepository.NewMockOrderRepository(t)
 
+	id := uuid.NewV4()
 	input := CaptureOrderInput{}
 
 	info := vo.CaptureOrder{
@@ -23,7 +25,7 @@ func TestCaptureOrderUseCase(t *testing.T) {
 	}
 	infoDetail := vo.CaptureOrderDetail{}
 
-	mockRepository.EXPECT().CaptureOrder(ctx, infoDetail).Return(nil).Once()
+	mockRepository.EXPECT().CaptureOrder(ctx, infoDetail).Return(id, nil).Once()
 	mockService.EXPECT().CaptureOrder(ctx, info).Return(infoDetail, nil)
 
 	u := NewCaptureOrderUseCase(mockService, mockRepository)
@@ -41,12 +43,13 @@ func TestCreateOrderUseCase(t *testing.T) {
 
 	input := CreateOrderInput{}
 
+	id := uuid.NewV4()
 	info := vo.CreateOrder{
 		ProviderType: input.ProviderType,
 	}
 	infoDetail := vo.CreateOrderDetail{}
 
-	mockRepository.EXPECT().CreateOrder(ctx, infoDetail).Return(nil).Once()
+	mockRepository.EXPECT().CreateOrder(ctx, infoDetail).Return(id, nil).Once()
 	mockService.EXPECT().CreateOrder(ctx, info).Return(infoDetail, nil)
 
 	u := NewCreateOrderUseCase(mockService, mockRepository)

@@ -8,6 +8,7 @@ import (
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/vo"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/shared_domain"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/use_case"
+	uuid "github.com/satori/go.uuid"
 )
 
 type CaptureOrderUseCase interface {
@@ -15,12 +16,12 @@ type CaptureOrderUseCase interface {
 }
 
 type CaptureOrderInput struct {
-	OrderId      string
+	OrderId      uuid.UUID
 	ProviderType shared_domain.ProviderType
 }
 
 type CaptureOrderOutput struct {
-	Id        string
+	Id        uuid.UUID
 	Amount    string
 	Currency  string
 	CreatedAt int64
@@ -49,12 +50,12 @@ func (u *captureOrderUseCase) Handle(ctx context.Context, input CaptureOrderInpu
 		return
 	}
 
-	err = u.orderRepository.CaptureOrder(ctx, r)
+	id, err := u.orderRepository.CaptureOrder(ctx, r)
 	if err != nil {
 		return
 	}
 
-	output.Id = r.Id
+	output.Id = id
 	output.Amount = r.Amount
 	output.Currency = r.Currency
 	output.CreatedAt = r.CreatedAt

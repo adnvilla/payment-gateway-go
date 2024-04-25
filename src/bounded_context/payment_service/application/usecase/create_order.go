@@ -8,6 +8,7 @@ import (
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/vo"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/shared_domain"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/use_case"
+	uuid "github.com/satori/go.uuid"
 )
 
 type CreateOrderUseCase interface {
@@ -21,7 +22,7 @@ type CreateOrderInput struct {
 }
 
 type CreateOrderOutput struct {
-	Id        string
+	Id        uuid.UUID
 	Amount    string
 	Currency  string
 	CreatedAt int64
@@ -51,12 +52,12 @@ func (u *createOrderUseCase) Handle(ctx context.Context, input CreateOrderInput)
 		return
 	}
 
-	err = u.orderRepository.CreateOrder(ctx, r)
+	id, err := u.orderRepository.CreateOrder(ctx, r)
 	if err != nil {
 		return
 	}
 
-	output.Id = r.Id
+	output.Id = id
 	output.Amount = r.Amount
 	output.Currency = r.Currency
 	output.CreatedAt = r.CreatedAt

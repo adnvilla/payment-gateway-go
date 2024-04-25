@@ -7,6 +7,8 @@ import (
 
 	mock "github.com/stretchr/testify/mock"
 
+	uuid "github.com/satori/go.uuid"
+
 	vo "github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/vo"
 )
 
@@ -24,21 +26,33 @@ func (_m *MockOrderRepository) EXPECT() *MockOrderRepository_Expecter {
 }
 
 // CaptureOrder provides a mock function with given fields: ctx, order
-func (_m *MockOrderRepository) CaptureOrder(ctx context.Context, order vo.CaptureOrderDetail) error {
+func (_m *MockOrderRepository) CaptureOrder(ctx context.Context, order vo.CaptureOrderDetail) (uuid.UUID, error) {
 	ret := _m.Called(ctx, order)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CaptureOrder")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, vo.CaptureOrderDetail) error); ok {
+	var r0 uuid.UUID
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, vo.CaptureOrderDetail) (uuid.UUID, error)); ok {
+		return rf(ctx, order)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, vo.CaptureOrderDetail) uuid.UUID); ok {
 		r0 = rf(ctx, order)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(uuid.UUID)
+		}
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(context.Context, vo.CaptureOrderDetail) error); ok {
+		r1 = rf(ctx, order)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // MockOrderRepository_CaptureOrder_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CaptureOrder'
@@ -60,32 +74,44 @@ func (_c *MockOrderRepository_CaptureOrder_Call) Run(run func(ctx context.Contex
 	return _c
 }
 
-func (_c *MockOrderRepository_CaptureOrder_Call) Return(_a0 error) *MockOrderRepository_CaptureOrder_Call {
-	_c.Call.Return(_a0)
+func (_c *MockOrderRepository_CaptureOrder_Call) Return(_a0 uuid.UUID, _a1 error) *MockOrderRepository_CaptureOrder_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockOrderRepository_CaptureOrder_Call) RunAndReturn(run func(context.Context, vo.CaptureOrderDetail) error) *MockOrderRepository_CaptureOrder_Call {
+func (_c *MockOrderRepository_CaptureOrder_Call) RunAndReturn(run func(context.Context, vo.CaptureOrderDetail) (uuid.UUID, error)) *MockOrderRepository_CaptureOrder_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // CreateOrder provides a mock function with given fields: ctx, order
-func (_m *MockOrderRepository) CreateOrder(ctx context.Context, order vo.CreateOrderDetail) error {
+func (_m *MockOrderRepository) CreateOrder(ctx context.Context, order vo.CreateOrderDetail) (uuid.UUID, error) {
 	ret := _m.Called(ctx, order)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateOrder")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, vo.CreateOrderDetail) error); ok {
+	var r0 uuid.UUID
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, vo.CreateOrderDetail) (uuid.UUID, error)); ok {
+		return rf(ctx, order)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, vo.CreateOrderDetail) uuid.UUID); ok {
 		r0 = rf(ctx, order)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(uuid.UUID)
+		}
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(context.Context, vo.CreateOrderDetail) error); ok {
+		r1 = rf(ctx, order)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // MockOrderRepository_CreateOrder_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateOrder'
@@ -107,12 +133,12 @@ func (_c *MockOrderRepository_CreateOrder_Call) Run(run func(ctx context.Context
 	return _c
 }
 
-func (_c *MockOrderRepository_CreateOrder_Call) Return(_a0 error) *MockOrderRepository_CreateOrder_Call {
-	_c.Call.Return(_a0)
+func (_c *MockOrderRepository_CreateOrder_Call) Return(_a0 uuid.UUID, _a1 error) *MockOrderRepository_CreateOrder_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockOrderRepository_CreateOrder_Call) RunAndReturn(run func(context.Context, vo.CreateOrderDetail) error) *MockOrderRepository_CreateOrder_Call {
+func (_c *MockOrderRepository_CreateOrder_Call) RunAndReturn(run func(context.Context, vo.CreateOrderDetail) (uuid.UUID, error)) *MockOrderRepository_CreateOrder_Call {
 	_c.Call.Return(run)
 	return _c
 }

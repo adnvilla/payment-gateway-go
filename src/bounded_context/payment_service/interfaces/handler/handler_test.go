@@ -13,6 +13,7 @@ import (
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/interfaces/dto"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/testutils"
 	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -97,8 +98,11 @@ func TestCaptureOrder(t *testing.T) {
 	ctx := testutils.GetTestGinContext(w)
 
 	// Fixture
+	id := uuid.NewV4()
 	body := dto.CaptureOrderRequest{}
-	expected := dto.CaptureOrderResponse{}
+	expected := dto.CaptureOrderResponse{
+		Id: id.String(),
+	}
 	expectedStatus := http.StatusOK
 	response := dto.CaptureOrderResponse{}
 
@@ -106,12 +110,14 @@ func TestCaptureOrder(t *testing.T) {
 	ctx.Params = []gin.Param{
 		{
 			Key:   "id",
-			Value: "order",
+			Value: id.String(),
 		},
 	}
 
 	usecaseMock := usecasemock.NewMockCaptureOrderUseCase(t)
-	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CaptureOrderOutput{}, nil)
+	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CaptureOrderOutput{
+		Id: id,
+	}, nil)
 
 	// Act
 	handler := NewCaptureOrderHandler(usecaseMock)
@@ -158,6 +164,7 @@ func TestCaptureOrderFail(t *testing.T) {
 	ctx := testutils.GetTestGinContext(w)
 
 	// Fixture
+	id := uuid.NewV4()
 	body := dto.CaptureOrderRequest{}
 	expected := dto.CaptureOrderResponse{}
 	expectedStatus := http.StatusBadRequest
@@ -167,7 +174,7 @@ func TestCaptureOrderFail(t *testing.T) {
 	ctx.Params = []gin.Param{
 		{
 			Key:   "id",
-			Value: "order",
+			Value: id.String(),
 		},
 	}
 

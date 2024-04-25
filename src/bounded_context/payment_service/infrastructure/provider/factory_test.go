@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/adnvilla/payment-gateway-go/src/pkg/shared_domain"
@@ -10,6 +11,7 @@ import (
 )
 
 func TestGetGetProviderClient(t *testing.T) {
+	os.Setenv("PAYMENT_GATEWAY_PROVIDER_STRIPE_KEY", "")
 	factory := NewGetProviderFactory()
 
 	expected := NewStripeProvider(stripe.GetStripeClient("").PaymentIntents)

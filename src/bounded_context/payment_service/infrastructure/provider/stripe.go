@@ -66,7 +66,7 @@ func (s *stripeProvider) CreateOrder(ctx context.Context, createOrder vo.CreateO
 
 func (s *stripeProvider) CaptureOrder(ctx context.Context, captureOrder vo.CaptureOrder) (vo.CaptureOrderDetail, error) {
 	params := &stripe.PaymentIntentCaptureParams{}
-	result, err := s.stripeClient.Capture(captureOrder.OrderId, params)
+	result, err := s.stripeClient.Capture(captureOrder.OrderId.String(), params)
 	if err != nil {
 		return vo.CaptureOrderDetail{}, err
 	}
