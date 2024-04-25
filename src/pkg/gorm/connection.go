@@ -1,7 +1,9 @@
 package gorm
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"sync"
 
 	"gorm.io/driver/postgres"
@@ -24,8 +26,15 @@ func getConnection() *gorm.DB {
 		cfg := &gorm.Config{
 			PrepareStmt: true,
 		}
-		dsn := "host=localhost user=usuario password=contraseña dbname=nombre_basedatos port=5432 sslmode=disable"
-		db, err := gorm.Open(postgres.Open(dsn), cfg)
+
+		host := os.Getenv("PAYMENT_GATEWAY_POSTGRES_HOST")
+		user := os.Getenv("PAYMENT_GATEWAY_POSTGRES_USER")
+		pwd := os.Getenv("PAYMENT_GATEWAY_POSTGRES_PASSWORD")
+		dbName := os.Getenv("PAYMENT_GATEWAY_POSTGRES_DBNAME")
+		env := os.Getenv("PAYMENT_GATEWAY_ENV")
+
+		dsn := "host=%v user=%v password=%v dbname=%v_%v port=5432 sslmode=disable"
+		db, err := gorm.Open(postgres.Open(fmt.Sprintf(dsn, host, user, pwd, dbName, env)), cfg)
 		if err != nil {
 			log.Fatal("error: gorm db not found:", err)
 		}
