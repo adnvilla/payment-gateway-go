@@ -13,6 +13,14 @@ import (
 )
 
 func main() {
+	engine := setupRouter()
+
+	if err := engine.Run(); err != nil {
+		panic(err)
+	}
+}
+
+func setupRouter() *gin.Engine {
 	engine := gin.Default()
 
 	engine.Use(gin.Logger())
@@ -23,9 +31,7 @@ func main() {
 
 	initializeEndpoints(routerV1)
 
-	if err := engine.Run(); err != nil {
-		panic(err)
-	}
+	return engine
 }
 
 func initializeEndpoints(routerV1 *gin.RouterGroup) {
@@ -56,4 +62,7 @@ func initializeEndpoints(routerV1 *gin.RouterGroup) {
 	routerV1.POST("/refunds", refundCreateRefundHandler.CreateRefund)
 	routerV1.GET("/refunds/:id", refundGetRefundHandler.GetRefund)
 
+	routerV1.GET("/ping", func(c *gin.Context) {
+		c.String(200, "pong")
+	})
 }
