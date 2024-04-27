@@ -124,6 +124,40 @@ func TestGetOrderProviderRepository(t *testing.T) {
 	}
 }
 
+func TestGetOrderRepository(t *testing.T) {
+
+	sqldb, dbMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	if err != nil {
+		t.Fatalf("Error creating mock database: %v", err)
+	}
+	defer sqldb.Close()
+	dialector := postgres.New(postgres.Config{
+		Conn:       sqldb,
+		DriverName: "postgres",
+	})
+	db, _ := gorm.Open(dialector, &gorm.Config{})
+
+	id := uuid.NewV4()
+	id2 := uuid.NewV4()
+	id3 := uuid.NewV4()
+
+	sqlRegex := `SELECT * FROM "create_orders" WHERE "create_orders"."id" = $1 ORDER BY "create_orders"."id" LIMIT $2`
+	columns := []string{"id", "amount", "currency", "provider_type", "created_at"}
+	dbMock.ExpectQuery(sqlRegex).
+		WithArgs(id.String(), 1).
+		WillReturnRows(sqlmock.NewRows(columns).
+			AddRow(id.String(), id2.String(), id3.String(), 1, 123))
+	repo := NewOrderRepository(db)
+
+	_, err = repo.GetOrder(context.TODO(), id)
+
+	assert.NoError(t, err)
+
+	if err := dbMock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Unfulfilled expectations: %s", err)
+	}
+}
+
 type AnyTime struct{}
 
 // Match satisfies sqlmock.Argument interface

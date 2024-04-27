@@ -40,6 +40,7 @@ func (r *orderRepository) CreateOrder(ctx context.Context, order vo.CreateOrderD
 
 	return orderModel.ID, nil
 }
+
 func (r *orderRepository) CaptureOrder(ctx context.Context, order vo.CaptureOrderDetail) (uuid.UUID, error) {
 	captureModel := models.CaptureOrder{
 		ProviderType: int(order.ProviderType),
@@ -71,6 +72,25 @@ func (r *orderRepository) GetOrderProvider(ctx context.Context, order uuid.UUID)
 	return vo.CreateOrderDetail{
 		Id:           orderProvider.ID,
 		OrderId:      orderProvider.ProviderOrderID,
+		ProviderType: shared_domain.ProviderType(orderProvider.ProviderType),
+	}, nil
+}
+
+func (r *orderRepository) GetOrder(ctx context.Context, order uuid.UUID) (vo.CreateOrder, error) {
+
+	orderProvider := models.CreateOrder{}
+	orderProvider.ID = order
+
+	result := r.db.First(&orderProvider)
+	if result.Error != nil {
+		return vo.CreateOrder{}, fmt.Errorf("have a issue with consult DB CreateOrderProvider: %v", result.Error)
+	}
+
+	return vo.CreateOrder{
+		Id:           orderProvider.ID,
+		Amount:       orderProvider.Amount,
+		Currency:     orderProvider.Currency,
+		CreatedAt:    int64(orderProvider.CreatedAt),
 		ProviderType: shared_domain.ProviderType(orderProvider.ProviderType),
 	}, nil
 }

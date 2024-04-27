@@ -41,6 +41,30 @@ func TestCaptureOrderUseCase(t *testing.T) {
 	assert.NotNil(t, out)
 }
 
+func TestGetOrderUseCase(t *testing.T) {
+	ctx := context.Background()
+	mockService := mockService.NewMockOrderProviderService(t)
+	mockRepository := mockRepository.NewMockOrderRepository(t)
+
+	id := uuid.NewV4()
+	input := GetOrderInput{
+		Id: id,
+	}
+
+	info := vo.CreateOrder{
+		Id: id,
+	}
+
+	mockRepository.EXPECT().GetOrder(ctx, id).Return(info, nil).Once()
+
+	u := NewGetOrderUseCase(mockService, mockRepository)
+
+	out, err := u.Handle(ctx, input)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, out)
+}
+
 func TestCreateOrderUseCase(t *testing.T) {
 	ctx := context.Background()
 	mockService := mockService.NewMockOrderProviderService(t)

@@ -7,7 +7,7 @@ import (
 
 type Model struct {
 	ID        uuid.UUID `gorm:"type:uuid;primary_key;"`
-	CreatedAt int
+	CreatedAt int64
 }
 
 // BeforeCreate will set a UUID rather than numeric ID.
