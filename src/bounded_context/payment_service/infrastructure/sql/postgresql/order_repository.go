@@ -66,7 +66,7 @@ func (r *orderRepository) GetOrderProvider(ctx context.Context, order uuid.UUID)
 
 	result := r.db.Where("create_order_id = ?", order.String()).First(&orderProvider)
 	if result.Error != nil {
-		return vo.CreateOrderDetail{}, fmt.Errorf("have a issue with consult DB CreateOrderProvider: %v", result.Error)
+		return vo.CreateOrderDetail{}, fmt.Errorf("have a issue with consult DB GetOrderProvider: %v", result.Error)
 	}
 
 	return vo.CreateOrderDetail{
@@ -83,7 +83,7 @@ func (r *orderRepository) GetOrder(ctx context.Context, order uuid.UUID) (vo.Cre
 
 	result := r.db.First(&orderProvider)
 	if result.Error != nil {
-		return vo.CreateOrder{}, fmt.Errorf("have a issue with consult DB CreateOrderProvider: %v", result.Error)
+		return vo.CreateOrder{}, fmt.Errorf("have a issue with consult DB GetOrder: %v", result.Error)
 	}
 
 	return vo.CreateOrder{
@@ -120,7 +120,7 @@ func (r *orderRepository) GetCaptureOrderProvider(ctx context.Context, order uui
 
 	result := r.db.Where("capture_order_id = ?", order.String()).First(&orderProvider)
 	if result.Error != nil {
-		return vo.CaptureOrderDetail{}, fmt.Errorf("have a issue with consult DB CreateOrderProvider: %v", result.Error)
+		return vo.CaptureOrderDetail{}, fmt.Errorf("have a issue with consult DB GetCaptureOrderProvider: %v", result.Error)
 	}
 
 	return vo.CaptureOrderDetail{
@@ -138,7 +138,7 @@ func (r *orderRepository) GetRefundProvider(ctx context.Context, order uuid.UUID
 
 	result := r.db.Where("refund_id = ?", order.String()).First(&orderProvider)
 	if result.Error != nil {
-		return vo.CreateRefundDetail{}, fmt.Errorf("have a issue with consult DB CreateOrderProvider: %v", result.Error)
+		return vo.CreateRefundDetail{}, fmt.Errorf("have a issue with consult DB GetRefundProvider: %v", result.Error)
 	}
 
 	return vo.CreateRefundDetail{
