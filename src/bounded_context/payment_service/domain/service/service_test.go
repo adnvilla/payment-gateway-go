@@ -83,3 +83,36 @@ func TestGetServiceCaptureOrderUnsupportedProvider(t *testing.T) {
 	assert.Error(t, err)
 	assert.NotNil(t, r)
 }
+
+func TestGetServiceCreateRefund(t *testing.T) {
+	ctx := context.Background()
+	mockFactory := serviceMock.NewMockGetProviderService(t)
+	mockProvider := serviceMock.NewMockOrderProviderService(t)
+
+	mockFactory.EXPECT().GetProviderClient(ctx, shared_domain.ProviderType_Stripe).Return(mockProvider, nil).Once()
+	mockProvider.EXPECT().CreateRefund(ctx, mock.Anything).Return(vo.CreateRefundDetail{}, nil).Once()
+	s := service.NewCreateOrderService(mockFactory)
+
+	r, err := s.CreateRefund(ctx, vo.CreateRefundOrder{
+		ProviderType: shared_domain.ProviderType_Stripe,
+	})
+
+	assert.NoError(t, err)
+	assert.NotNil(t, r)
+}
+
+func TestGetServiceCreateRefundUnsupportedProvider(t *testing.T) {
+	ctx := context.Background()
+	mockFactory := serviceMock.NewMockGetProviderService(t)
+	mockProvider := serviceMock.NewMockOrderProviderService(t)
+
+	mockFactory.EXPECT().GetProviderClient(ctx, shared_domain.ProviderType(100)).Return(mockProvider, errors.New("unsupported provider")).Once()
+	s := service.NewCreateOrderService(mockFactory)
+
+	r, err := s.CreateRefund(ctx, vo.CreateRefundOrder{
+		ProviderType: shared_domain.ProviderType(100),
+	})
+
+	assert.Error(t, err)
+	assert.NotNil(t, r)
+}

@@ -373,6 +373,63 @@ func (_c *MockOrderRepository_GetOrderProvider_Call) RunAndReturn(run func(conte
 	return _c
 }
 
+// GetRefundProvider provides a mock function with given fields: ctx, orderId
+func (_m *MockOrderRepository) GetRefundProvider(ctx context.Context, orderId uuid.UUID) (vo.CreateRefundDetail, error) {
+	ret := _m.Called(ctx, orderId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetRefundProvider")
+	}
+
+	var r0 vo.CreateRefundDetail
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) (vo.CreateRefundDetail, error)); ok {
+		return rf(ctx, orderId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) vo.CreateRefundDetail); ok {
+		r0 = rf(ctx, orderId)
+	} else {
+		r0 = ret.Get(0).(vo.CreateRefundDetail)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = rf(ctx, orderId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockOrderRepository_GetRefundProvider_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetRefundProvider'
+type MockOrderRepository_GetRefundProvider_Call struct {
+	*mock.Call
+}
+
+// GetRefundProvider is a helper method to define mock.On call
+//   - ctx context.Context
+//   - orderId uuid.UUID
+func (_e *MockOrderRepository_Expecter) GetRefundProvider(ctx interface{}, orderId interface{}) *MockOrderRepository_GetRefundProvider_Call {
+	return &MockOrderRepository_GetRefundProvider_Call{Call: _e.mock.On("GetRefundProvider", ctx, orderId)}
+}
+
+func (_c *MockOrderRepository_GetRefundProvider_Call) Run(run func(ctx context.Context, orderId uuid.UUID)) *MockOrderRepository_GetRefundProvider_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID))
+	})
+	return _c
+}
+
+func (_c *MockOrderRepository_GetRefundProvider_Call) Return(_a0 vo.CreateRefundDetail, _a1 error) *MockOrderRepository_GetRefundProvider_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockOrderRepository_GetRefundProvider_Call) RunAndReturn(run func(context.Context, uuid.UUID) (vo.CreateRefundDetail, error)) *MockOrderRepository_GetRefundProvider_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewMockOrderRepository creates a new instance of MockOrderRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockOrderRepository(t interface {

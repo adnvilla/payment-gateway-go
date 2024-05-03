@@ -90,6 +90,40 @@ func TestCaptureOrderRepository(t *testing.T) {
 	}
 }
 
+func TestGetCaptureOrderProviderRepository(t *testing.T) {
+
+	sqldb, dbMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	if err != nil {
+		t.Fatalf("Error creating mock database: %v", err)
+	}
+	defer sqldb.Close()
+	dialector := postgres.New(postgres.Config{
+		Conn:       sqldb,
+		DriverName: "postgres",
+	})
+	db, _ := gorm.Open(dialector, &gorm.Config{})
+
+	id := uuid.NewV4()
+	id2 := uuid.NewV4()
+	id3 := uuid.NewV4()
+
+	sqlRegex := `SELECT * FROM "capture_order_providers" WHERE capture_order_id = $1 ORDER BY "capture_order_providers"."id" LIMIT $2`
+	columns := []string{"id", "capture_order_id", "provider_order_id", "provider_type", "payload", "created_at"}
+	dbMock.ExpectQuery(sqlRegex).
+		WithArgs(id.String(), 1).
+		WillReturnRows(sqlmock.NewRows(columns).
+			AddRow(id.String(), id2.String(), id3.String(), 1, "rd", 123))
+	repo := NewOrderRepository(db)
+
+	_, err = repo.GetCaptureOrderProvider(context.TODO(), id)
+
+	assert.NoError(t, err)
+
+	if err := dbMock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Unfulfilled expectations: %s", err)
+	}
+}
+
 func TestGetOrderProviderRepository(t *testing.T) {
 
 	sqldb, dbMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -150,6 +184,78 @@ func TestGetOrderRepository(t *testing.T) {
 	repo := NewOrderRepository(db)
 
 	_, err = repo.GetOrder(context.TODO(), id)
+
+	assert.NoError(t, err)
+
+	if err := dbMock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Unfulfilled expectations: %s", err)
+	}
+}
+
+func TestCreateRefundRepository(t *testing.T) {
+
+	sqldb, dbMock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("Error creating mock database: %v", err)
+	}
+	defer sqldb.Close()
+	dialector := postgres.New(postgres.Config{
+		Conn:       sqldb,
+		DriverName: "postgres",
+	})
+	db, _ := gorm.Open(dialector, &gorm.Config{})
+
+	id := uuid.NewV4()
+
+	input := vo.CreateRefundDetail{
+		RefundOrderId: id.String(),
+		ProviderType:  shared_domain.ProviderType_Stripe,
+	}
+	sqlRegex := `INSERT INTO "refunds"`
+	sqlRegex2 := `INSERT INTO "refund_providers"`
+	dbMock.ExpectBegin()
+	dbMock.ExpectExec(sqlRegex).WithArgs(AnyString{}, AnyTime{}, AnyString{}, AnyString{}, input.ProviderType).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	dbMock.ExpectExec(sqlRegex2).WithArgs(AnyString{}, AnyTime{}, AnyString{}, AnyString{}, input.ProviderType, AnyString{}).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	dbMock.ExpectCommit()
+	repo := NewOrderRepository(db)
+
+	_, err = repo.CreateRefund(context.TODO(), input)
+
+	assert.NoError(t, err)
+
+	if err := dbMock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Unfulfilled expectations: %s", err)
+	}
+}
+
+func TestCreateRefundProviderRepository(t *testing.T) {
+
+	sqldb, dbMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	if err != nil {
+		t.Fatalf("Error creating mock database: %v", err)
+	}
+	defer sqldb.Close()
+	dialector := postgres.New(postgres.Config{
+		Conn:       sqldb,
+		DriverName: "postgres",
+	})
+	db, _ := gorm.Open(dialector, &gorm.Config{})
+
+	id := uuid.NewV4()
+	id2 := uuid.NewV4()
+	id3 := uuid.NewV4()
+
+	sqlRegex := `SELECT * FROM "refund_providers" WHERE refund_id = $1 ORDER BY "refund_providers"."id" LIMIT $2`
+	columns := []string{"id", "refund_id", "provider_order_id", "provider_type", "payload", "created_at"}
+	dbMock.ExpectQuery(sqlRegex).
+		WithArgs(id.String(), 1).
+		WillReturnRows(sqlmock.NewRows(columns).
+			AddRow(id.String(), id2.String(), id3.String(), 1, "rd", 123))
+	repo := NewOrderRepository(db)
+
+	_, err = repo.GetRefundProvider(context.TODO(), id)
 
 	assert.NoError(t, err)
 

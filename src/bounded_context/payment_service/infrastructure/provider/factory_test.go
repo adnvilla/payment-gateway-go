@@ -36,6 +36,15 @@ func TestPaypalGetProviderClient(t *testing.T) {
 	assert.Equal(t, expected, c)
 }
 
+func TestPaypalGetProviderClientPanic(t *testing.T) {
+	os.Setenv("PAYMENT_GATEWAY_PROVIDER_PAYPAL_SECRETID", "")
+	os.Setenv("PAYMENT_GATEWAY_PROVIDER_PAYPAL_CLIENTID", "")
+
+	assert.Panics(t, func() {
+		paypal_sdk.GetPaypalClient("", "")
+	})
+}
+
 func TestGetGetProviderClientNotSupported(t *testing.T) {
 	factory := NewGetProviderFactory()
 

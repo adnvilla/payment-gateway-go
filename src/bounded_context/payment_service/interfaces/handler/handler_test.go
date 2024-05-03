@@ -313,3 +313,71 @@ func TestGetRefundFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, expected, response)
 }
+
+func TestGetOrder(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	id := uuid.NewV4()
+	expected := dto.GetOrderResponse{
+		Id: id.String(),
+	}
+	expectedStatus := http.StatusOK
+	response := dto.GetOrderResponse{}
+	ctx.Params = []gin.Param{
+		{
+			Key:   "id",
+			Value: id.String(),
+		},
+	}
+
+	testutils.MockJsonGet(ctx, nil)
+
+	usecaseMock := usecasemock.NewMockGetOrderUseCase(t)
+	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetOrderOutput{
+		Id: id,
+	}, nil)
+
+	// Act
+	handler := NewGetOrderHandler(usecaseMock)
+	handler.GetOrder(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestGetOrderFail(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	id := uuid.NewV4()
+	expected := dto.GetOrderResponse{}
+	expectedStatus := http.StatusBadRequest
+	response := dto.GetOrderResponse{}
+	ctx.Params = []gin.Param{
+		{
+			Key:   "id",
+			Value: id.String(),
+		},
+	}
+
+	testutils.MockJsonGet(ctx, nil)
+
+	usecaseMock := usecasemock.NewMockGetOrderUseCase(t)
+	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetOrderOutput{}, fmt.Errorf("some error"))
+
+	// Act
+	handler := NewGetOrderHandler(usecaseMock)
+	handler.GetOrder(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}

@@ -129,3 +129,21 @@ func (r *orderRepository) GetCaptureOrderProvider(ctx context.Context, order uui
 		ProviderType:   shared_domain.ProviderType(orderProvider.ProviderType),
 	}, nil
 }
+
+func (r *orderRepository) GetRefundProvider(ctx context.Context, order uuid.UUID) (vo.CreateRefundDetail, error) {
+
+	orderProvider := models.RefundProvider{
+		RefundId: order,
+	}
+
+	result := r.db.Where("refund_id = ?", order.String()).First(&orderProvider)
+	if result.Error != nil {
+		return vo.CreateRefundDetail{}, fmt.Errorf("have a issue with consult DB CreateOrderProvider: %v", result.Error)
+	}
+
+	return vo.CreateRefundDetail{
+		Id:            orderProvider.ID,
+		RefundOrderId: orderProvider.ProviderRefundID,
+		ProviderType:  shared_domain.ProviderType(orderProvider.ProviderType),
+	}, nil
+}

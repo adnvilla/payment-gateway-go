@@ -11,7 +11,7 @@ func GetPaypalClient(clientId, secretId string) *paypal.Client {
 	c, err := paypal.NewClient(clientId, secretId, paypal.APIBaseSandBox)
 
 	if err != nil {
-		log.Fatal("paypal client error: ", err)
+		log.Panicf("paypal client error: %v", err)
 	}
 	return c
 }
