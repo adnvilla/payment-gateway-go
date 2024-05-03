@@ -14,6 +14,7 @@ import (
 type PaypalProvider interface {
 	CreateOrder(ctx context.Context, intent string, purchaseUnits []paypal.PurchaseUnitRequest, payer *paypal.CreateOrderPayer, appContext *paypal.ApplicationContext) (*paypal.Order, error)
 	CaptureOrder(ctx context.Context, orderID string, captureOrderRequest paypal.CaptureOrderRequest) (*paypal.CaptureOrderResponse, error)
+	RefundCapture(ctx context.Context, captureID string, refundCaptureRequest paypal.RefundCaptureRequest) (*paypal.RefundResponse, error)
 }
 
 type paypalProvider struct {
@@ -80,6 +81,25 @@ func (s *paypalProvider) CaptureOrder(ctx context.Context, captureOrder vo.Captu
 		CaptureOrderId: result.ID,
 		ProviderType:   captureOrder.ProviderType,
 		Payload:        string(payload),
+	}, nil
+}
+
+func (s *paypalProvider) CreateRefund(ctx context.Context, createRefund vo.CreateRefundOrder) (vo.CreateRefundDetail, error) {
+	result, err := s.paypalClient.RefundCapture(ctx, createRefund.CaptureOrderId, paypal.RefundCaptureRequest{})
+
+	if err != nil {
+		return vo.CreateRefundDetail{}, err
+	}
+
+	payload, err := json.Marshal(result)
+	if err != nil {
+		return vo.CreateRefundDetail{}, err
+	}
+
+	return vo.CreateRefundDetail{
+		RefundOrderId: result.ID,
+		ProviderType:  createRefund.ProviderType,
+		Payload:       string(payload),
 	}, nil
 }
 

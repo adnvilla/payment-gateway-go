@@ -22,8 +22,8 @@ func (f *factory) GetProviderClient(ctx context.Context, provider shared_domain.
 	switch provider {
 	case shared_domain.ProviderType_Stripe:
 		key := os.Getenv("PAYMENT_GATEWAY_PROVIDER_STRIPE_KEY")
-		client := stripe.GetStripeClient(key)
-		return NewStripeProvider(client.PaymentIntents), nil
+		client := stripe.NewWrapStripeProvider(key)
+		return NewStripeProvider(client), nil
 	case shared_domain.ProviderType_Paypal:
 		clientid := os.Getenv("PAYMENT_GATEWAY_PROVIDER_PAYPAL_CLIENTID")
 		secretid := os.Getenv("PAYMENT_GATEWAY_PROVIDER_PAYPAL_SECRETID")

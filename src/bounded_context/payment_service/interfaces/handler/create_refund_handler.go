@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -8,6 +9,7 @@ import (
 	errorshandle "github.com/adnvilla/payment-gateway-go/src/pkg/errors_handle"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/use_case"
 	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
 )
 
 type CreateRefundHandler struct {
@@ -21,8 +23,26 @@ func NewCreateRefundHandler(usecase use_case.UseCase[usecase.CreateRefundInput, 
 }
 
 func (handler *CreateRefundHandler) CreateRefund(c *gin.Context) {
+	orderId := c.Param("id")
+	if orderId == "" {
+		c.JSON(http.StatusBadRequest, errorshandle.ErrorCustomize{
+			Error: fmt.Sprint(errors.New("please check the request")),
+		})
+		return
+	}
 
-	input := usecase.CreateRefundInput{}
+	id, err := uuid.FromString(orderId)
+	if err != nil {
+		// Errs it will be customize with handle errors
+		c.JSON(http.StatusBadRequest, errorshandle.ErrorCustomize{
+			Error: fmt.Sprint(err),
+		})
+		return
+	}
+
+	input := usecase.CreateRefundInput{
+		CaptureOrderId: id,
+	}
 
 	result, err := handler.usecase.Handle(c, input)
 

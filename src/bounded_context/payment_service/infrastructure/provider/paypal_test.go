@@ -54,6 +54,23 @@ func TestPaypalProviderCaptureOrder(t *testing.T) {
 	})
 }
 
+func TestPaypalProviderCreateRefund(t *testing.T) {
+	mockPaypal := mockProvider.NewMockPaypalProvider(t)
+	ctx := context.Background()
+	id := "clientId"
+
+	mockPaypal.EXPECT().RefundCapture(ctx, id, paypal.RefundCaptureRequest{}).Return(&paypal.RefundResponse{
+		ID: id,
+	}, nil).Once()
+
+	paypalProvider := NewPaypalProvider(mockPaypal)
+
+	paypalProvider.CreateRefund(ctx, vo.CreateRefundOrder{
+		CaptureOrderId: id,
+		ProviderType:   shared_domain.ProviderType_Paypal,
+	})
+}
+
 func TestParsePaypalCurrency(t *testing.T) {
 	var tests = []struct {
 		currency    string

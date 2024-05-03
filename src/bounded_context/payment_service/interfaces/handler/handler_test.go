@@ -197,12 +197,19 @@ func TestCreateRefund(t *testing.T) {
 	ctx := testutils.GetTestGinContext(w)
 
 	// Fixture
+	id := uuid.NewV4()
 	body := dto.CreateRefundRequest{}
 	expected := dto.CreateRefundResponse{}
 	expectedStatus := http.StatusOK
 	response := dto.CreateRefundResponse{}
 
 	testutils.MockJsonPost(ctx, body)
+	ctx.Params = []gin.Param{
+		{
+			Key:   "id",
+			Value: id.String(),
+		},
+	}
 
 	usecaseMock := usecasemock.NewMockCreateRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateRefundOutput{}, nil)
@@ -223,12 +230,19 @@ func TestCreateRefundFail(t *testing.T) {
 	ctx := testutils.GetTestGinContext(w)
 
 	// Fixture
+	id := uuid.NewV4()
 	body := dto.CreateRefundRequest{}
 	expected := dto.CreateRefundResponse{}
 	expectedStatus := http.StatusBadRequest
 	response := dto.CreateRefundResponse{}
 
 	testutils.MockJsonPost(ctx, body)
+	ctx.Params = []gin.Param{
+		{
+			Key:   "id",
+			Value: id.String(),
+		},
+	}
 
 	usecaseMock := usecasemock.NewMockCreateRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateRefundOutput{}, fmt.Errorf("some error"))

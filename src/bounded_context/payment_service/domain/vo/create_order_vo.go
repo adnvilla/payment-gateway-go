@@ -22,15 +22,3 @@ type CreateOrderDetail struct {
 	CreatedAt    int64
 	Payload      string
 }
-
-type CaptureOrder struct {
-	OrderId      string
-	ProviderType shared_domain.ProviderType
-}
-
-type CaptureOrderDetail struct {
-	Id             string
-	CaptureOrderId string
-	ProviderType   shared_domain.ProviderType
-	Payload        string
-}

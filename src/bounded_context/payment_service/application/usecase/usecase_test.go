@@ -90,10 +90,30 @@ func TestCreateOrderUseCase(t *testing.T) {
 
 func TestCreateRefundUseCase(t *testing.T) {
 	ctx := context.Background()
+	mockService := mockService.NewMockOrderProviderService(t)
+	mockRepository := mockRepository.NewMockOrderRepository(t)
 
-	input := CreateRefundInput{}
+	id := uuid.NewV4()
+	input := CreateRefundInput{
+		CaptureOrderId: id,
+	}
 
-	u := NewCreateRefundUseCase()
+	i := vo.CaptureOrderDetail{
+		CaptureOrderId: "orderproviderid",
+	}
+
+	info := vo.CreateRefundOrder{
+		CaptureOrderId: i.CaptureOrderId,
+		ProviderType:   input.ProviderType,
+	}
+	infoDetail := vo.CreateRefundDetail{}
+
+	mockRepository.EXPECT().CreateRefund(ctx, infoDetail).Return(id, nil).Once()
+	mockRepository.EXPECT().GetCaptureOrderProvider(ctx, input.CaptureOrderId).Return(i, nil).Once()
+	mockService.EXPECT().CreateRefund(ctx, info).Return(infoDetail, nil)
+
+	u := NewCreateRefundUseCase(mockService, mockRepository)
+
 	out, err := u.Handle(ctx, input)
 
 	assert.NoError(t, err)

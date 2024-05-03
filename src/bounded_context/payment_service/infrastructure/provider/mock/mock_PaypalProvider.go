@@ -144,6 +144,66 @@ func (_c *MockPaypalProvider_CreateOrder_Call) RunAndReturn(run func(context.Con
 	return _c
 }
 
+// RefundCapture provides a mock function with given fields: ctx, captureID, refundCaptureRequest
+func (_m *MockPaypalProvider) RefundCapture(ctx context.Context, captureID string, refundCaptureRequest paypal.RefundCaptureRequest) (*paypal.RefundResponse, error) {
+	ret := _m.Called(ctx, captureID, refundCaptureRequest)
+
+	if len(ret) == 0 {
+		panic("no return value specified for RefundCapture")
+	}
+
+	var r0 *paypal.RefundResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, paypal.RefundCaptureRequest) (*paypal.RefundResponse, error)); ok {
+		return rf(ctx, captureID, refundCaptureRequest)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, paypal.RefundCaptureRequest) *paypal.RefundResponse); ok {
+		r0 = rf(ctx, captureID, refundCaptureRequest)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*paypal.RefundResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, paypal.RefundCaptureRequest) error); ok {
+		r1 = rf(ctx, captureID, refundCaptureRequest)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockPaypalProvider_RefundCapture_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'RefundCapture'
+type MockPaypalProvider_RefundCapture_Call struct {
+	*mock.Call
+}
+
+// RefundCapture is a helper method to define mock.On call
+//   - ctx context.Context
+//   - captureID string
+//   - refundCaptureRequest paypal.RefundCaptureRequest
+func (_e *MockPaypalProvider_Expecter) RefundCapture(ctx interface{}, captureID interface{}, refundCaptureRequest interface{}) *MockPaypalProvider_RefundCapture_Call {
+	return &MockPaypalProvider_RefundCapture_Call{Call: _e.mock.On("RefundCapture", ctx, captureID, refundCaptureRequest)}
+}
+
+func (_c *MockPaypalProvider_RefundCapture_Call) Run(run func(ctx context.Context, captureID string, refundCaptureRequest paypal.RefundCaptureRequest)) *MockPaypalProvider_RefundCapture_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string), args[2].(paypal.RefundCaptureRequest))
+	})
+	return _c
+}
+
+func (_c *MockPaypalProvider_RefundCapture_Call) Return(_a0 *paypal.RefundResponse, _a1 error) *MockPaypalProvider_RefundCapture_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockPaypalProvider_RefundCapture_Call) RunAndReturn(run func(context.Context, string, paypal.RefundCaptureRequest) (*paypal.RefundResponse, error)) *MockPaypalProvider_RefundCapture_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewMockPaypalProvider creates a new instance of MockPaypalProvider. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockPaypalProvider(t interface {

@@ -12,8 +12,9 @@ import (
 )
 
 type StripeProvider interface {
-	New(params *stripe.PaymentIntentParams) (*stripe.PaymentIntent, error)
+	NewPaymentIntent(params *stripe.PaymentIntentParams) (*stripe.PaymentIntent, error)
 	Capture(id string, params *stripe.PaymentIntentCaptureParams) (*stripe.PaymentIntent, error)
+	NewRefund(params *stripe.RefundParams) (*stripe.Refund, error)
 }
 
 type stripeProvider struct {
@@ -44,7 +45,7 @@ func (s *stripeProvider) CreateOrder(ctx context.Context, createOrder vo.CreateO
 			Enabled: stripe.Bool(true),
 		},
 	}
-	result, err := s.stripeClient.New(params)
+	result, err := s.stripeClient.NewPaymentIntent(params)
 	if err != nil {
 		return vo.CreateOrderDetail{}, err
 	}
@@ -72,7 +73,22 @@ func (s *stripeProvider) CaptureOrder(ctx context.Context, captureOrder vo.Captu
 	}
 
 	return vo.CaptureOrderDetail{
-		Id: result.ID,
+		CaptureOrderId: result.ID,
+	}, nil
+}
+
+func (s *stripeProvider) CreateRefund(ctx context.Context, captureOrder vo.CreateRefundOrder) (vo.CreateRefundDetail, error) {
+	params := &stripe.RefundParams{
+		Charge: stripe.String(captureOrder.CaptureOrderId),
+	}
+
+	result, err := s.stripeClient.NewRefund(params)
+	if err != nil {
+		return vo.CreateRefundDetail{}, err
+	}
+
+	return vo.CreateRefundDetail{
+		RefundOrderId: result.ID,
 	}, nil
 }
 

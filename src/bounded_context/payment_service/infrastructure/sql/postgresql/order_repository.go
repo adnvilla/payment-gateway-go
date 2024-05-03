@@ -94,3 +94,38 @@ func (r *orderRepository) GetOrder(ctx context.Context, order uuid.UUID) (vo.Cre
 		ProviderType: shared_domain.ProviderType(orderProvider.ProviderType),
 	}, nil
 }
+
+func (r *orderRepository) CreateRefund(ctx context.Context, order vo.CreateRefundDetail) (uuid.UUID, error) {
+	captureModel := models.Refund{
+		ProviderType: int(order.ProviderType),
+		RefundProvider: models.RefundProvider{
+			ProviderRefundID: order.RefundOrderId,
+			ProviderType:     int(order.ProviderType),
+			Payload:          order.Payload,
+		},
+	}
+	result := r.db.Create(&captureModel)
+	if result.Error != nil {
+		return uuid.UUID{}, fmt.Errorf("have a issue with insert DB CreateRefund: %v", result.Error)
+	}
+
+	return captureModel.ID, nil
+}
+
+func (r *orderRepository) GetCaptureOrderProvider(ctx context.Context, order uuid.UUID) (vo.CaptureOrderDetail, error) {
+
+	orderProvider := models.CaptureOrderProvider{
+		CaptureOrderID: order,
+	}
+
+	result := r.db.Where("capture_order_id = ?", order.String()).First(&orderProvider)
+	if result.Error != nil {
+		return vo.CaptureOrderDetail{}, fmt.Errorf("have a issue with consult DB CreateOrderProvider: %v", result.Error)
+	}
+
+	return vo.CaptureOrderDetail{
+		Id:             orderProvider.ID,
+		CaptureOrderId: orderProvider.ProviderCaptureID,
+		ProviderType:   shared_domain.ProviderType(orderProvider.ProviderType),
+	}, nil
+}

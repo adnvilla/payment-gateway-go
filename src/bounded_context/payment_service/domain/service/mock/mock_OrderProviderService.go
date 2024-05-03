@@ -23,9 +23,9 @@ func (_m *MockOrderProviderService) EXPECT() *MockOrderProviderService_Expecter 
 	return &MockOrderProviderService_Expecter{mock: &_m.Mock}
 }
 
-// CaptureOrder provides a mock function with given fields: ctx, createOrder
-func (_m *MockOrderProviderService) CaptureOrder(ctx context.Context, createOrder vo.CaptureOrder) (vo.CaptureOrderDetail, error) {
-	ret := _m.Called(ctx, createOrder)
+// CaptureOrder provides a mock function with given fields: ctx, capture
+func (_m *MockOrderProviderService) CaptureOrder(ctx context.Context, capture vo.CaptureOrder) (vo.CaptureOrderDetail, error) {
+	ret := _m.Called(ctx, capture)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CaptureOrder")
@@ -34,16 +34,16 @@ func (_m *MockOrderProviderService) CaptureOrder(ctx context.Context, createOrde
 	var r0 vo.CaptureOrderDetail
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, vo.CaptureOrder) (vo.CaptureOrderDetail, error)); ok {
-		return rf(ctx, createOrder)
+		return rf(ctx, capture)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, vo.CaptureOrder) vo.CaptureOrderDetail); ok {
-		r0 = rf(ctx, createOrder)
+		r0 = rf(ctx, capture)
 	} else {
 		r0 = ret.Get(0).(vo.CaptureOrderDetail)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, vo.CaptureOrder) error); ok {
-		r1 = rf(ctx, createOrder)
+		r1 = rf(ctx, capture)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -58,12 +58,12 @@ type MockOrderProviderService_CaptureOrder_Call struct {
 
 // CaptureOrder is a helper method to define mock.On call
 //   - ctx context.Context
-//   - createOrder vo.CaptureOrder
-func (_e *MockOrderProviderService_Expecter) CaptureOrder(ctx interface{}, createOrder interface{}) *MockOrderProviderService_CaptureOrder_Call {
-	return &MockOrderProviderService_CaptureOrder_Call{Call: _e.mock.On("CaptureOrder", ctx, createOrder)}
+//   - capture vo.CaptureOrder
+func (_e *MockOrderProviderService_Expecter) CaptureOrder(ctx interface{}, capture interface{}) *MockOrderProviderService_CaptureOrder_Call {
+	return &MockOrderProviderService_CaptureOrder_Call{Call: _e.mock.On("CaptureOrder", ctx, capture)}
 }
 
-func (_c *MockOrderProviderService_CaptureOrder_Call) Run(run func(ctx context.Context, createOrder vo.CaptureOrder)) *MockOrderProviderService_CaptureOrder_Call {
+func (_c *MockOrderProviderService_CaptureOrder_Call) Run(run func(ctx context.Context, capture vo.CaptureOrder)) *MockOrderProviderService_CaptureOrder_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(vo.CaptureOrder))
 	})
@@ -80,9 +80,9 @@ func (_c *MockOrderProviderService_CaptureOrder_Call) RunAndReturn(run func(cont
 	return _c
 }
 
-// CreateOrder provides a mock function with given fields: ctx, createOrder
-func (_m *MockOrderProviderService) CreateOrder(ctx context.Context, createOrder vo.CreateOrder) (vo.CreateOrderDetail, error) {
-	ret := _m.Called(ctx, createOrder)
+// CreateOrder provides a mock function with given fields: ctx, order
+func (_m *MockOrderProviderService) CreateOrder(ctx context.Context, order vo.CreateOrder) (vo.CreateOrderDetail, error) {
+	ret := _m.Called(ctx, order)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateOrder")
@@ -91,16 +91,16 @@ func (_m *MockOrderProviderService) CreateOrder(ctx context.Context, createOrder
 	var r0 vo.CreateOrderDetail
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, vo.CreateOrder) (vo.CreateOrderDetail, error)); ok {
-		return rf(ctx, createOrder)
+		return rf(ctx, order)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, vo.CreateOrder) vo.CreateOrderDetail); ok {
-		r0 = rf(ctx, createOrder)
+		r0 = rf(ctx, order)
 	} else {
 		r0 = ret.Get(0).(vo.CreateOrderDetail)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, vo.CreateOrder) error); ok {
-		r1 = rf(ctx, createOrder)
+		r1 = rf(ctx, order)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -115,12 +115,12 @@ type MockOrderProviderService_CreateOrder_Call struct {
 
 // CreateOrder is a helper method to define mock.On call
 //   - ctx context.Context
-//   - createOrder vo.CreateOrder
-func (_e *MockOrderProviderService_Expecter) CreateOrder(ctx interface{}, createOrder interface{}) *MockOrderProviderService_CreateOrder_Call {
-	return &MockOrderProviderService_CreateOrder_Call{Call: _e.mock.On("CreateOrder", ctx, createOrder)}
+//   - order vo.CreateOrder
+func (_e *MockOrderProviderService_Expecter) CreateOrder(ctx interface{}, order interface{}) *MockOrderProviderService_CreateOrder_Call {
+	return &MockOrderProviderService_CreateOrder_Call{Call: _e.mock.On("CreateOrder", ctx, order)}
 }
 
-func (_c *MockOrderProviderService_CreateOrder_Call) Run(run func(ctx context.Context, createOrder vo.CreateOrder)) *MockOrderProviderService_CreateOrder_Call {
+func (_c *MockOrderProviderService_CreateOrder_Call) Run(run func(ctx context.Context, order vo.CreateOrder)) *MockOrderProviderService_CreateOrder_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(vo.CreateOrder))
 	})
@@ -133,6 +133,63 @@ func (_c *MockOrderProviderService_CreateOrder_Call) Return(_a0 vo.CreateOrderDe
 }
 
 func (_c *MockOrderProviderService_CreateOrder_Call) RunAndReturn(run func(context.Context, vo.CreateOrder) (vo.CreateOrderDetail, error)) *MockOrderProviderService_CreateOrder_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CreateRefund provides a mock function with given fields: ctx, refund
+func (_m *MockOrderProviderService) CreateRefund(ctx context.Context, refund vo.CreateRefundOrder) (vo.CreateRefundDetail, error) {
+	ret := _m.Called(ctx, refund)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateRefund")
+	}
+
+	var r0 vo.CreateRefundDetail
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, vo.CreateRefundOrder) (vo.CreateRefundDetail, error)); ok {
+		return rf(ctx, refund)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, vo.CreateRefundOrder) vo.CreateRefundDetail); ok {
+		r0 = rf(ctx, refund)
+	} else {
+		r0 = ret.Get(0).(vo.CreateRefundDetail)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, vo.CreateRefundOrder) error); ok {
+		r1 = rf(ctx, refund)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockOrderProviderService_CreateRefund_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateRefund'
+type MockOrderProviderService_CreateRefund_Call struct {
+	*mock.Call
+}
+
+// CreateRefund is a helper method to define mock.On call
+//   - ctx context.Context
+//   - refund vo.CreateRefundOrder
+func (_e *MockOrderProviderService_Expecter) CreateRefund(ctx interface{}, refund interface{}) *MockOrderProviderService_CreateRefund_Call {
+	return &MockOrderProviderService_CreateRefund_Call{Call: _e.mock.On("CreateRefund", ctx, refund)}
+}
+
+func (_c *MockOrderProviderService_CreateRefund_Call) Run(run func(ctx context.Context, refund vo.CreateRefundOrder)) *MockOrderProviderService_CreateRefund_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(vo.CreateRefundOrder))
+	})
+	return _c
+}
+
+func (_c *MockOrderProviderService_CreateRefund_Call) Return(_a0 vo.CreateRefundDetail, _a1 error) *MockOrderProviderService_CreateRefund_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockOrderProviderService_CreateRefund_Call) RunAndReturn(run func(context.Context, vo.CreateRefundOrder) (vo.CreateRefundDetail, error)) *MockOrderProviderService_CreateRefund_Call {
 	_c.Call.Return(run)
 	return _c
 }

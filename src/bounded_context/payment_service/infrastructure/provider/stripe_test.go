@@ -7,9 +7,11 @@ import (
 
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/domain/vo"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/shared_domain"
+	stripewrap "github.com/adnvilla/payment-gateway-go/src/pkg/stripe"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/stripe/mock"
 	"github.com/stripe/stripe-go/v78"
 	"github.com/stripe/stripe-go/v78/paymentintent"
+	"github.com/stripe/stripe-go/v78/refund"
 	"go.uber.org/mock/gomock"
 )
 
@@ -18,7 +20,7 @@ func TestStripeProviderCreateOrder(t *testing.T) {
 	defer mockController.Finish()
 	// Create a mock stripe backend
 	mockBackend := mock.NewMockBackend(mockController)
-	c := paymentintent.Client{B: mockBackend, Key: "key_123"}
+	c := &paymentintent.Client{B: mockBackend, Key: "key_123"}
 
 	// Set up a mock call
 	mockBackend.EXPECT().Call("POST", "/v1/payment_intents", gomock.Any(), gomock.Any(), gomock.Any()).
@@ -31,7 +33,7 @@ func TestStripeProviderCreateOrder(t *testing.T) {
 			}
 		}).Times(1)
 
-	stripeProvider := NewStripeProvider(c)
+	stripeProvider := NewStripeProvider(stripewrap.NewWrapStripeProviderWithClients("", c, nil))
 
 	stripeProvider.CreateOrder(context.Background(), vo.CreateOrder{
 		Amount:       "152",
@@ -45,7 +47,7 @@ func TestStripeProviderCaptureOrder(t *testing.T) {
 	defer mockController.Finish()
 	// Create a mock stripe backend
 	mockBackend := mock.NewMockBackend(mockController)
-	c := paymentintent.Client{B: mockBackend, Key: "key_123"}
+	c := &paymentintent.Client{B: mockBackend, Key: "key_123"}
 	id := "clientId"
 
 	// Set up a mock call
@@ -59,11 +61,38 @@ func TestStripeProviderCaptureOrder(t *testing.T) {
 			}
 		}).Times(1)
 
-	stripeProvider := NewStripeProvider(c)
+	stripeProvider := NewStripeProvider(stripewrap.NewWrapStripeProviderWithClients("", c, nil))
 
 	stripeProvider.CaptureOrder(context.Background(), vo.CaptureOrder{
 		OrderId:      id,
 		ProviderType: shared_domain.ProviderType_Stripe,
+	})
+}
+
+func TestStripeProviderCreateRefund(t *testing.T) {
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+	// Create a mock stripe backend
+	mockBackend := mock.NewMockBackend(mockController)
+	c := &refund.Client{B: mockBackend, Key: "key_123"}
+	id := "clientId"
+
+	// Set up a mock call
+	mockBackend.EXPECT().Call("POST", "/v1/refunds", gomock.Any(), gomock.Any(), gomock.Any()).
+		// Return nil error
+		Return(nil).
+		Do(func(method string, path string, key string, params stripe.ParamsContainer, v *stripe.Refund) {
+			// Set the return value for the method
+			*v = stripe.Refund{
+				ID: id,
+			}
+		}).Times(1)
+
+	stripeProvider := NewStripeProvider(stripewrap.NewWrapStripeProviderWithClients("key_123", nil, c))
+
+	stripeProvider.CreateRefund(context.Background(), vo.CreateRefundOrder{
+		CaptureOrderId: id,
+		ProviderType:   shared_domain.ProviderType_Stripe,
 	})
 }
 

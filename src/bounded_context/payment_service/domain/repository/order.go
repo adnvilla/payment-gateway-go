@@ -12,4 +12,6 @@ type OrderRepository interface {
 	GetOrder(ctx context.Context, orderId uuid.UUID) (vo.CreateOrder, error)
 	GetOrderProvider(ctx context.Context, orderId uuid.UUID) (vo.CreateOrderDetail, error)
 	CaptureOrder(ctx context.Context, order vo.CaptureOrderDetail) (uuid.UUID, error)
+	GetCaptureOrderProvider(ctx context.Context, orderId uuid.UUID) (vo.CaptureOrderDetail, error)
+	CreateRefund(ctx context.Context, order vo.CreateRefundDetail) (uuid.UUID, error)
 }

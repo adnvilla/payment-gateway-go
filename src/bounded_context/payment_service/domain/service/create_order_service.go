@@ -7,8 +7,9 @@ import (
 )
 
 type OrderService interface {
-	CreateOrder(ctx context.Context, createOrder vo.CreateOrder) (vo.CreateOrderDetail, error)
-	CaptureOrder(ctx context.Context, createOrder vo.CaptureOrder) (vo.CaptureOrderDetail, error)
+	CreateOrder(ctx context.Context, order vo.CreateOrder) (vo.CreateOrderDetail, error)
+	CaptureOrder(ctx context.Context, capture vo.CaptureOrder) (vo.CaptureOrderDetail, error)
+	CreateRefund(ctx context.Context, refund vo.CreateRefundOrder) (vo.CreateRefundDetail, error)
 }
 
 type OrderProviderService interface {
@@ -40,4 +41,12 @@ func (c *createOrderService) CaptureOrder(ctx context.Context, captureOrder vo.C
 		return vo.CaptureOrderDetail{}, err
 	}
 	return provider.CaptureOrder(ctx, captureOrder)
+}
+
+func (c *createOrderService) CreateRefund(ctx context.Context, refund vo.CreateRefundOrder) (vo.CreateRefundDetail, error) {
+	provider, err := c.factory.GetProviderClient(ctx, refund.ProviderType)
+	if err != nil {
+		return vo.CreateRefundDetail{}, err
+	}
+	return provider.CreateRefund(ctx, refund)
 }

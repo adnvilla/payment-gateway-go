@@ -45,7 +45,7 @@ func initializeEndpoints(routerV1 *gin.RouterGroup) {
 	captureOrderUsecase := usecase.NewCaptureOrderUseCase(service, repository)
 	getOrderUsecase := usecase.NewGetOrderUseCase(repository)
 
-	createRefundUsecase := usecase.NewCreateRefundUseCase()
+	createRefundUsecase := usecase.NewCreateRefundUseCase(service, repository)
 	getRefundUseCase := usecase.NewGetRefundUseCase()
 
 	paymentCreateOrderHandler := handler.NewCreateOrderHandler(createOrderUsecase)

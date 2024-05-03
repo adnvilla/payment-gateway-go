@@ -80,12 +80,12 @@ func (_c *MockStripeProvider_Capture_Call) RunAndReturn(run func(string, *stripe
 	return _c
 }
 
-// New provides a mock function with given fields: params
-func (_m *MockStripeProvider) New(params *stripe.PaymentIntentParams) (*stripe.PaymentIntent, error) {
+// NewPaymentIntent provides a mock function with given fields: params
+func (_m *MockStripeProvider) NewPaymentIntent(params *stripe.PaymentIntentParams) (*stripe.PaymentIntent, error) {
 	ret := _m.Called(params)
 
 	if len(ret) == 0 {
-		panic("no return value specified for New")
+		panic("no return value specified for NewPaymentIntent")
 	}
 
 	var r0 *stripe.PaymentIntent
@@ -110,30 +110,88 @@ func (_m *MockStripeProvider) New(params *stripe.PaymentIntentParams) (*stripe.P
 	return r0, r1
 }
 
-// MockStripeProvider_New_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'New'
-type MockStripeProvider_New_Call struct {
+// MockStripeProvider_NewPaymentIntent_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'NewPaymentIntent'
+type MockStripeProvider_NewPaymentIntent_Call struct {
 	*mock.Call
 }
 
-// New is a helper method to define mock.On call
+// NewPaymentIntent is a helper method to define mock.On call
 //   - params *stripe.PaymentIntentParams
-func (_e *MockStripeProvider_Expecter) New(params interface{}) *MockStripeProvider_New_Call {
-	return &MockStripeProvider_New_Call{Call: _e.mock.On("New", params)}
+func (_e *MockStripeProvider_Expecter) NewPaymentIntent(params interface{}) *MockStripeProvider_NewPaymentIntent_Call {
+	return &MockStripeProvider_NewPaymentIntent_Call{Call: _e.mock.On("NewPaymentIntent", params)}
 }
 
-func (_c *MockStripeProvider_New_Call) Run(run func(params *stripe.PaymentIntentParams)) *MockStripeProvider_New_Call {
+func (_c *MockStripeProvider_NewPaymentIntent_Call) Run(run func(params *stripe.PaymentIntentParams)) *MockStripeProvider_NewPaymentIntent_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(*stripe.PaymentIntentParams))
 	})
 	return _c
 }
 
-func (_c *MockStripeProvider_New_Call) Return(_a0 *stripe.PaymentIntent, _a1 error) *MockStripeProvider_New_Call {
+func (_c *MockStripeProvider_NewPaymentIntent_Call) Return(_a0 *stripe.PaymentIntent, _a1 error) *MockStripeProvider_NewPaymentIntent_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockStripeProvider_New_Call) RunAndReturn(run func(*stripe.PaymentIntentParams) (*stripe.PaymentIntent, error)) *MockStripeProvider_New_Call {
+func (_c *MockStripeProvider_NewPaymentIntent_Call) RunAndReturn(run func(*stripe.PaymentIntentParams) (*stripe.PaymentIntent, error)) *MockStripeProvider_NewPaymentIntent_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// NewRefund provides a mock function with given fields: params
+func (_m *MockStripeProvider) NewRefund(params *stripe.RefundParams) (*stripe.Refund, error) {
+	ret := _m.Called(params)
+
+	if len(ret) == 0 {
+		panic("no return value specified for NewRefund")
+	}
+
+	var r0 *stripe.Refund
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*stripe.RefundParams) (*stripe.Refund, error)); ok {
+		return rf(params)
+	}
+	if rf, ok := ret.Get(0).(func(*stripe.RefundParams) *stripe.Refund); ok {
+		r0 = rf(params)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*stripe.Refund)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*stripe.RefundParams) error); ok {
+		r1 = rf(params)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockStripeProvider_NewRefund_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'NewRefund'
+type MockStripeProvider_NewRefund_Call struct {
+	*mock.Call
+}
+
+// NewRefund is a helper method to define mock.On call
+//   - params *stripe.RefundParams
+func (_e *MockStripeProvider_Expecter) NewRefund(params interface{}) *MockStripeProvider_NewRefund_Call {
+	return &MockStripeProvider_NewRefund_Call{Call: _e.mock.On("NewRefund", params)}
+}
+
+func (_c *MockStripeProvider_NewRefund_Call) Run(run func(params *stripe.RefundParams)) *MockStripeProvider_NewRefund_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(*stripe.RefundParams))
+	})
+	return _c
+}
+
+func (_c *MockStripeProvider_NewRefund_Call) Return(_a0 *stripe.Refund, _a1 error) *MockStripeProvider_NewRefund_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockStripeProvider_NewRefund_Call) RunAndReturn(run func(*stripe.RefundParams) (*stripe.Refund, error)) *MockStripeProvider_NewRefund_Call {
 	_c.Call.Return(run)
 	return _c
 }

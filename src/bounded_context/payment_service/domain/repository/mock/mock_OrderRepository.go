@@ -143,6 +143,122 @@ func (_c *MockOrderRepository_CreateOrder_Call) RunAndReturn(run func(context.Co
 	return _c
 }
 
+// CreateRefund provides a mock function with given fields: ctx, order
+func (_m *MockOrderRepository) CreateRefund(ctx context.Context, order vo.CreateRefundDetail) (uuid.UUID, error) {
+	ret := _m.Called(ctx, order)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateRefund")
+	}
+
+	var r0 uuid.UUID
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, vo.CreateRefundDetail) (uuid.UUID, error)); ok {
+		return rf(ctx, order)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, vo.CreateRefundDetail) uuid.UUID); ok {
+		r0 = rf(ctx, order)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(uuid.UUID)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, vo.CreateRefundDetail) error); ok {
+		r1 = rf(ctx, order)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockOrderRepository_CreateRefund_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateRefund'
+type MockOrderRepository_CreateRefund_Call struct {
+	*mock.Call
+}
+
+// CreateRefund is a helper method to define mock.On call
+//   - ctx context.Context
+//   - order vo.CreateRefundDetail
+func (_e *MockOrderRepository_Expecter) CreateRefund(ctx interface{}, order interface{}) *MockOrderRepository_CreateRefund_Call {
+	return &MockOrderRepository_CreateRefund_Call{Call: _e.mock.On("CreateRefund", ctx, order)}
+}
+
+func (_c *MockOrderRepository_CreateRefund_Call) Run(run func(ctx context.Context, order vo.CreateRefundDetail)) *MockOrderRepository_CreateRefund_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(vo.CreateRefundDetail))
+	})
+	return _c
+}
+
+func (_c *MockOrderRepository_CreateRefund_Call) Return(_a0 uuid.UUID, _a1 error) *MockOrderRepository_CreateRefund_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockOrderRepository_CreateRefund_Call) RunAndReturn(run func(context.Context, vo.CreateRefundDetail) (uuid.UUID, error)) *MockOrderRepository_CreateRefund_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetCaptureOrderProvider provides a mock function with given fields: ctx, orderId
+func (_m *MockOrderRepository) GetCaptureOrderProvider(ctx context.Context, orderId uuid.UUID) (vo.CaptureOrderDetail, error) {
+	ret := _m.Called(ctx, orderId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetCaptureOrderProvider")
+	}
+
+	var r0 vo.CaptureOrderDetail
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) (vo.CaptureOrderDetail, error)); ok {
+		return rf(ctx, orderId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) vo.CaptureOrderDetail); ok {
+		r0 = rf(ctx, orderId)
+	} else {
+		r0 = ret.Get(0).(vo.CaptureOrderDetail)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = rf(ctx, orderId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockOrderRepository_GetCaptureOrderProvider_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetCaptureOrderProvider'
+type MockOrderRepository_GetCaptureOrderProvider_Call struct {
+	*mock.Call
+}
+
+// GetCaptureOrderProvider is a helper method to define mock.On call
+//   - ctx context.Context
+//   - orderId uuid.UUID
+func (_e *MockOrderRepository_Expecter) GetCaptureOrderProvider(ctx interface{}, orderId interface{}) *MockOrderRepository_GetCaptureOrderProvider_Call {
+	return &MockOrderRepository_GetCaptureOrderProvider_Call{Call: _e.mock.On("GetCaptureOrderProvider", ctx, orderId)}
+}
+
+func (_c *MockOrderRepository_GetCaptureOrderProvider_Call) Run(run func(ctx context.Context, orderId uuid.UUID)) *MockOrderRepository_GetCaptureOrderProvider_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID))
+	})
+	return _c
+}
+
+func (_c *MockOrderRepository_GetCaptureOrderProvider_Call) Return(_a0 vo.CaptureOrderDetail, _a1 error) *MockOrderRepository_GetCaptureOrderProvider_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockOrderRepository_GetCaptureOrderProvider_Call) RunAndReturn(run func(context.Context, uuid.UUID) (vo.CaptureOrderDetail, error)) *MockOrderRepository_GetCaptureOrderProvider_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetOrder provides a mock function with given fields: ctx, orderId
 func (_m *MockOrderRepository) GetOrder(ctx context.Context, orderId uuid.UUID) (vo.CreateOrder, error) {
 	ret := _m.Called(ctx, orderId)
