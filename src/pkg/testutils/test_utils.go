@@ -23,32 +23,79 @@ func GetTestGinContext(w *httptest.ResponseRecorder) *gin.Context {
 	return ctx
 }
 
-func MockJsonPost(c *gin.Context, content interface{}) {
+func MockJsonPost(c *gin.Context, content interface{}, params gin.Params, urlValues url.Values) {
 	c.Request.Method = "POST"
 	c.Request.Header.Set("Content-Type", "application/json")
 
-	if content == nil {
-		return
+	if content != nil {
+		jsonbytes, err := json.Marshal(content)
+		if err != nil {
+			panic(err)
+		}
+
+		// the request body must be an io.ReadCloser
+		// the bytes buffer though doesn't implement io.Closer,
+		// so you wrap it in a no-op closer
+		c.Request.Body = io.NopCloser(bytes.NewBuffer(jsonbytes))
 	}
 
-	jsonbytes, err := json.Marshal(content)
-	if err != nil {
-		panic(err)
+	// set path params
+	if params != nil {
+		c.Params = params
 	}
 
-	// the request body must be an io.ReadCloser
-	// the bytes buffer though doesn't implement io.Closer,
-	// so you wrap it in a no-op closer
-	c.Request.Body = io.NopCloser(bytes.NewBuffer(jsonbytes))
+	// set query params
+	if urlValues != nil {
+		c.Request.URL.RawQuery = urlValues.Encode()
+	}
 }
 
-func MockJsonGet(c *gin.Context, params url.Values) {
+func MockJsonGet(c *gin.Context, params gin.Params, urlValues url.Values) {
 	c.Request.Method = "GET"
 	c.Request.Header.Set("Content-Type", "application/json")
+	c.Set("user_id", 1)
 
-	if params == nil {
-		return
+	// set path params
+	if params != nil {
+		c.Params = params
 	}
 
-	c.Request.URL.RawQuery = params.Encode()
+	// set query params
+	if urlValues != nil {
+		c.Request.URL.RawQuery = urlValues.Encode()
+	}
+}
+
+func MockJsonDelete(c *gin.Context, params gin.Params) {
+	c.Request.Method = "DELETE"
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Set("user_id", 1)
+
+	// set path params
+	if params != nil {
+		c.Params = params
+	}
+}
+
+func MockJsonPut(c *gin.Context, content interface{}, params gin.Params) {
+	c.Request.Method = "PUT"
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Set("user_id", 1)
+
+	// set path params
+	if params != nil {
+		c.Params = params
+	}
+
+	if content != nil {
+		jsonbytes, err := json.Marshal(content)
+		if err != nil {
+			panic(err)
+		}
+
+		// the request body must be an io.ReadCloser
+		// the bytes buffer though doesn't implement io.Closer,
+		// so you wrap it in a no-op closer
+		c.Request.Body = io.NopCloser(bytes.NewBuffer(jsonbytes))
+	}
 }

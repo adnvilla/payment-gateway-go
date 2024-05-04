@@ -7,8 +7,6 @@ Payment Gateway in Golang
 
 # Instruciones para ejecucion de API
 
-Estando en el folder `/investment_api`
-
 Ejecutar en una terminal:
 
 - `make`
@@ -17,8 +15,6 @@ Ejecutar en una terminal:
 Si no tiene soporte para make:
 
 - `go run main.go`
-
-Si desea eliminar el historial guardado en SQLite, eliminar el file `gorm.db` que se genera
 
 Para la generacion de mock (`brew install mockery`), ultilice:
 

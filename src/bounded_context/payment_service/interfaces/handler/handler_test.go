@@ -28,7 +28,7 @@ func TestCreateOrder(t *testing.T) {
 	expectedStatus := http.StatusOK
 	response := dto.CreateOrderResponse{}
 
-	testutils.MockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body, nil, nil)
 
 	usecaseMock := usecasemock.NewMockCreateOrderUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateOrderOutput{}, nil)
@@ -54,7 +54,7 @@ func TestCreateOrderFailBody(t *testing.T) {
 	expectedStatus := http.StatusBadRequest
 	response := dto.CreateOrderResponse{}
 
-	testutils.MockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body, nil, nil)
 
 	// Act
 	handler := NewCreateOrderHandler(nil)
@@ -77,7 +77,7 @@ func TestCreateOrderFail(t *testing.T) {
 	expectedStatus := http.StatusBadRequest
 	response := dto.CreateOrderResponse{}
 
-	testutils.MockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body, nil, nil)
 
 	usecaseMock := usecasemock.NewMockCreateOrderUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateOrderOutput{}, fmt.Errorf("some error"))
@@ -106,7 +106,7 @@ func TestCaptureOrder(t *testing.T) {
 	expectedStatus := http.StatusOK
 	response := dto.CaptureOrderResponse{}
 
-	testutils.MockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body, nil, nil)
 	ctx.Params = []gin.Param{
 		{
 			Key:   "id",
@@ -140,7 +140,7 @@ func TestCaptureOrderFailParameter(t *testing.T) {
 	expectedStatus := http.StatusBadRequest
 	response := dto.CaptureOrderResponse{}
 
-	testutils.MockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body, nil, nil)
 	ctx.Params = []gin.Param{
 		{
 			Key:   "failId",
@@ -170,7 +170,7 @@ func TestCaptureOrderFail(t *testing.T) {
 	expectedStatus := http.StatusBadRequest
 	response := dto.CaptureOrderResponse{}
 
-	testutils.MockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body, nil, nil)
 	ctx.Params = []gin.Param{
 		{
 			Key:   "id",
@@ -203,7 +203,7 @@ func TestCreateRefund(t *testing.T) {
 	expectedStatus := http.StatusOK
 	response := dto.CreateRefundResponse{}
 
-	testutils.MockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body, nil, nil)
 	ctx.Params = []gin.Param{
 		{
 			Key:   "id",
@@ -236,7 +236,7 @@ func TestCreateRefundFail(t *testing.T) {
 	expectedStatus := http.StatusBadRequest
 	response := dto.CreateRefundResponse{}
 
-	testutils.MockJsonPost(ctx, body)
+	testutils.MockJsonPost(ctx, body, nil, nil)
 	ctx.Params = []gin.Param{
 		{
 			Key:   "id",
@@ -267,10 +267,10 @@ func TestGetRefund(t *testing.T) {
 	expected := dto.GetRefundResponse{}
 	expectedStatus := http.StatusOK
 	response := dto.GetRefundResponse{}
-	params := url.Values{}
-	params.Add("charge_id", body.Charge)
+	urlValues := url.Values{}
+	urlValues.Add("charge_id", body.Charge)
 
-	testutils.MockJsonGet(ctx, params)
+	testutils.MockJsonGet(ctx, nil, urlValues)
 
 	usecaseMock := usecasemock.NewMockGetRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetRefundOutput{}, nil)
@@ -295,10 +295,10 @@ func TestGetRefundFail(t *testing.T) {
 	expected := dto.GetRefundResponse{}
 	expectedStatus := http.StatusBadRequest
 	response := dto.GetRefundResponse{}
-	params := url.Values{}
-	params.Add("charge_id", body.Charge)
+	urlValues := url.Values{}
+	urlValues.Add("charge_id", body.Charge)
 
-	testutils.MockJsonGet(ctx, params)
+	testutils.MockJsonGet(ctx, nil, urlValues)
 
 	usecaseMock := usecasemock.NewMockGetRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetRefundOutput{}, fmt.Errorf("some error"))
@@ -325,14 +325,14 @@ func TestGetOrder(t *testing.T) {
 	}
 	expectedStatus := http.StatusOK
 	response := dto.GetOrderResponse{}
-	ctx.Params = []gin.Param{
+	params := []gin.Param{
 		{
 			Key:   "id",
 			Value: id.String(),
 		},
 	}
 
-	testutils.MockJsonGet(ctx, nil)
+	testutils.MockJsonGet(ctx, params, nil)
 
 	usecaseMock := usecasemock.NewMockGetOrderUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetOrderOutput{
@@ -359,14 +359,14 @@ func TestGetOrderFail(t *testing.T) {
 	expected := dto.GetOrderResponse{}
 	expectedStatus := http.StatusBadRequest
 	response := dto.GetOrderResponse{}
-	ctx.Params = []gin.Param{
+	params := []gin.Param{
 		{
 			Key:   "id",
 			Value: id.String(),
 		},
 	}
 
-	testutils.MockJsonGet(ctx, nil)
+	testutils.MockJsonGet(ctx, params, nil)
 
 	usecaseMock := usecasemock.NewMockGetOrderUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetOrderOutput{}, fmt.Errorf("some error"))

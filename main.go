@@ -35,11 +35,13 @@ func setupRouter() *gin.Engine {
 }
 
 func initializeEndpoints(routerV1 *gin.RouterGroup) {
-
 	db := gorm.GetConnection()
+	if db.Error != nil {
+		panic(db.Error)
+	}
 	factory := provider.NewGetProviderFactory()
 	service := service.NewCreateOrderService(factory)
-	repository := postgresql.NewOrderRepository(db)
+	repository := postgresql.NewOrderRepository(db.Instance)
 
 	createOrderUsecase := usecase.NewCreateOrderUseCase(service, repository)
 	captureOrderUsecase := usecase.NewCaptureOrderUseCase(service, repository)

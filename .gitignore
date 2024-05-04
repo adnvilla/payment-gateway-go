@@ -25,3 +25,4 @@ go.work
 coverageUnit.out
 
 .env
+coverage.html
