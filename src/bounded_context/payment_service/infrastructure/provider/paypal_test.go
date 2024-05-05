@@ -37,6 +37,63 @@ func TestPaypalProviderCreateOrder(t *testing.T) {
 	assert.NotNil(t, r)
 }
 
+func TestPaypalProviderCreateOrderFail(t *testing.T) {
+	mockPaypal := mockProvider.NewMockPaypalProvider(t)
+	ctx := context.Background()
+	currency := "MXN"
+	amount := "152"
+
+	mockPaypal.EXPECT().CreateOrder(ctx, paypal.OrderIntentCapture, mock.Anything, mock.Anything, mock.Anything).Return(nil, fmt.Errorf("error")).Once()
+	expected := vo.CreateOrderDetail{}
+
+	paypalProvider := NewPaypalProvider(mockPaypal)
+
+	r, err := paypalProvider.CreateOrder(ctx, vo.CreateOrder{
+		Amount:       amount,
+		Currency:     currency,
+		ProviderType: shared_domain.ProviderType_Paypal,
+	})
+
+	assert.Error(t, err)
+	assert.Equal(t, expected, r)
+}
+
+func TestPaypalProviderCreateOrderCurrencyFail(t *testing.T) {
+	mockPaypal := mockProvider.NewMockPaypalProvider(t)
+	ctx := context.Background()
+	currency := "COP"
+	amount := "152"
+
+	paypalProvider := NewPaypalProvider(mockPaypal)
+
+	r, err := paypalProvider.CreateOrder(ctx, vo.CreateOrder{
+		Amount:       amount,
+		Currency:     currency,
+		ProviderType: shared_domain.ProviderType_Paypal,
+	})
+
+	assert.Error(t, err)
+	assert.Equal(t, vo.CreateOrderDetail{}, r)
+}
+
+func TestPaypalProviderCreateOrderAmountFail(t *testing.T) {
+	mockPaypal := mockProvider.NewMockPaypalProvider(t)
+	ctx := context.Background()
+	currency := "MXN"
+
+	paypalProvider := NewPaypalProvider(mockPaypal)
+
+	r, err := paypalProvider.CreateOrder(ctx, vo.CreateOrder{
+		Amount:       "error",
+		Currency:     currency,
+		ProviderType: shared_domain.ProviderType_Paypal,
+	})
+
+	assert.Error(t, err)
+	assert.Equal(t, vo.CreateOrderDetail{}, r)
+
+}
+
 func TestPaypalProviderCaptureOrder(t *testing.T) {
 	mockPaypal := mockProvider.NewMockPaypalProvider(t)
 	ctx := context.Background()

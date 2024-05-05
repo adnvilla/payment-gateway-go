@@ -11,6 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var contentType = "Content-Type"
+var applicationJson = "application/json"
+
 func GetTestGinContext(w *httptest.ResponseRecorder) *gin.Context {
 	gin.SetMode(gin.TestMode)
 
@@ -25,7 +28,7 @@ func GetTestGinContext(w *httptest.ResponseRecorder) *gin.Context {
 
 func MockJsonPost(c *gin.Context, content interface{}, params gin.Params, urlValues url.Values) {
 	c.Request.Method = "POST"
-	c.Request.Header.Set("Content-Type", "application/json")
+	c.Request.Header.Set(contentType, applicationJson)
 
 	if content != nil {
 		jsonbytes, err := json.Marshal(content)
@@ -52,7 +55,7 @@ func MockJsonPost(c *gin.Context, content interface{}, params gin.Params, urlVal
 
 func MockJsonGet(c *gin.Context, params gin.Params, urlValues url.Values) {
 	c.Request.Method = "GET"
-	c.Request.Header.Set("Content-Type", "application/json")
+	c.Request.Header.Set(contentType, applicationJson)
 	c.Set("user_id", 1)
 
 	// set path params
@@ -68,7 +71,7 @@ func MockJsonGet(c *gin.Context, params gin.Params, urlValues url.Values) {
 
 func MockJsonDelete(c *gin.Context, params gin.Params) {
 	c.Request.Method = "DELETE"
-	c.Request.Header.Set("Content-Type", "application/json")
+	c.Request.Header.Set(contentType, applicationJson)
 	c.Set("user_id", 1)
 
 	// set path params
@@ -79,7 +82,7 @@ func MockJsonDelete(c *gin.Context, params gin.Params) {
 
 func MockJsonPut(c *gin.Context, content interface{}, params gin.Params) {
 	c.Request.Method = "PUT"
-	c.Request.Header.Set("Content-Type", "application/json")
+	c.Request.Header.Set(contentType, applicationJson)
 	c.Set("user_id", 1)
 
 	// set path params

@@ -67,7 +67,7 @@ func TestCreateOrderFailBody(t *testing.T) {
 	assert.Equal(t, expected, response)
 }
 
-func TestCreateOrderFail(t *testing.T) {
+func TestCreateOrderHandleFail(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := testutils.GetTestGinContext(w)
 
@@ -159,7 +159,7 @@ func TestCaptureOrderFailParameter(t *testing.T) {
 	assert.Equal(t, expected, response)
 }
 
-func TestCaptureOrderFail(t *testing.T) {
+func TestCaptureOrderHanldeFail(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := testutils.GetTestGinContext(w)
 
@@ -183,6 +183,35 @@ func TestCaptureOrderFail(t *testing.T) {
 
 	// Act
 	handler := NewCaptureOrderHandler(usecaseMock)
+	handler.CaptureOrder(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestCaptureOrderFailParameterId(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	body := dto.CaptureOrderRequest{}
+	expected := dto.CaptureOrderResponse{}
+	expectedStatus := http.StatusBadRequest
+	response := dto.CaptureOrderResponse{}
+	ctx.Params = []gin.Param{
+		{
+			Key:   "id",
+			Value: "failId",
+		},
+	}
+
+	testutils.MockJsonPost(ctx, body, nil, nil)
+
+	// Act
+	handler := NewCaptureOrderHandler(nil)
 	handler.CaptureOrder(ctx)
 
 	// Assert
@@ -225,7 +254,7 @@ func TestCreateRefund(t *testing.T) {
 	assert.Equal(t, expected, response)
 }
 
-func TestCreateRefundFail(t *testing.T) {
+func TestCreateRefundHandleFail(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := testutils.GetTestGinContext(w)
 
@@ -249,6 +278,58 @@ func TestCreateRefundFail(t *testing.T) {
 
 	// Act
 	handler := NewCreateRefundHandler(usecaseMock)
+	handler.CreateRefund(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestCreateRefundFailParameterId(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	body := dto.CreateRefundRequest{}
+	expected := dto.CreateRefundResponse{}
+	expectedStatus := http.StatusBadRequest
+	response := dto.CreateRefundResponse{}
+	ctx.Params = []gin.Param{
+		{
+			Key:   "id",
+			Value: "failId",
+		},
+	}
+
+	testutils.MockJsonPost(ctx, body, nil, nil)
+
+	// Act
+	handler := NewCreateRefundHandler(nil)
+	handler.CreateRefund(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestCreateRefundFailParameter(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	body := dto.CreateRefundRequest{}
+	expected := dto.CreateRefundResponse{}
+	expectedStatus := http.StatusBadRequest
+	response := dto.CreateRefundResponse{}
+
+	testutils.MockJsonPost(ctx, body, nil, nil)
+
+	// Act
+	handler := NewCreateRefundHandler(nil)
 	handler.CreateRefund(ctx)
 
 	// Assert
@@ -286,7 +367,7 @@ func TestGetRefund(t *testing.T) {
 	assert.Equal(t, expected, response)
 }
 
-func TestGetRefundFail(t *testing.T) {
+func TestGetRefundHanldeFail(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := testutils.GetTestGinContext(w)
 
@@ -350,7 +431,7 @@ func TestGetOrder(t *testing.T) {
 	assert.Equal(t, expected, response)
 }
 
-func TestGetOrderFail(t *testing.T) {
+func TestGetOrderHanldeFail(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := testutils.GetTestGinContext(w)
 
@@ -373,6 +454,62 @@ func TestGetOrderFail(t *testing.T) {
 
 	// Act
 	handler := NewGetOrderHandler(usecaseMock)
+	handler.GetOrder(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestGetOrderFailParameter(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	expected := dto.GetOrderResponse{}
+	expectedStatus := http.StatusBadRequest
+	response := dto.GetOrderResponse{}
+	params := []gin.Param{
+		{
+			Key:   "failId",
+			Value: "order",
+		},
+	}
+
+	testutils.MockJsonGet(ctx, params, nil)
+
+	// Act
+	handler := NewGetOrderHandler(nil)
+	handler.GetOrder(ctx)
+
+	// Assert
+	assert.EqualValues(t, expectedStatus, w.Code)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestGetOrderFailParameterId(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := testutils.GetTestGinContext(w)
+
+	// Fixture
+	expected := dto.GetOrderResponse{}
+	expectedStatus := http.StatusBadRequest
+	response := dto.GetOrderResponse{}
+	params := []gin.Param{
+		{
+			Key:   "id",
+			Value: "failId",
+		},
+	}
+
+	testutils.MockJsonGet(ctx, params, nil)
+
+	// Act
+	handler := NewGetOrderHandler(nil)
 	handler.GetOrder(ctx)
 
 	// Assert
