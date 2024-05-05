@@ -43,3 +43,7 @@ func getConnection() *DBConn {
 	})
 	return &conn
 }
+
+func ResetConnection() {
+	dbConnOnce = sync.Once{}
+}
