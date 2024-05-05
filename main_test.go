@@ -28,7 +28,7 @@ func TestInit(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	r.Equal(200, w.Code)
-	r.Equal(t, "pong", w.Body.String())
+	r.Equal("pong", w.Body.String())
 }
 
 func TestInitFail(t *testing.T) {
