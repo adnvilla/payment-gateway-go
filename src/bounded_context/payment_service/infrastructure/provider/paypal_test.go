@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -12,6 +13,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPaypalProviderCreateOrder(t *testing.T) {
@@ -91,41 +93,98 @@ func TestPaypalProviderCreateOrderAmountFail(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Equal(t, vo.CreateOrderDetail{}, r)
-
 }
 
 func TestPaypalProviderCaptureOrder(t *testing.T) {
+	r := require.New(t)
 	mockPaypal := mockProvider.NewMockPaypalProvider(t)
 	ctx := context.Background()
 	id := "clientId"
 
-	mockPaypal.EXPECT().CaptureOrder(ctx, id, paypal.CaptureOrderRequest{}).Return(&paypal.CaptureOrderResponse{
+	captureResponse := &paypal.CaptureOrderResponse{
 		ID: id,
-	}, nil).Once()
+	}
+	payload, _ := json.Marshal(captureResponse)
+	expected := vo.CaptureOrderDetail{
+		CaptureOrderId: id,
+		ProviderType:   shared_domain.ProviderType_Paypal,
+		Payload:        string(payload),
+	}
+
+	mockPaypal.EXPECT().CaptureOrder(ctx, id, paypal.CaptureOrderRequest{}).Return(captureResponse, nil).Once()
 
 	paypalProvider := NewPaypalProvider(mockPaypal)
 
-	paypalProvider.CaptureOrder(ctx, vo.CaptureOrder{
+	reult, err := paypalProvider.CaptureOrder(ctx, vo.CaptureOrder{
 		OrderId:      id,
 		ProviderType: shared_domain.ProviderType_Paypal,
 	})
+
+	r.NoError(err)
+	r.Equal(expected, reult)
 }
 
-func TestPaypalProviderCreateRefund(t *testing.T) {
+func TestPaypalProviderCaptureOrderFail(t *testing.T) {
+	r := require.New(t)
 	mockPaypal := mockProvider.NewMockPaypalProvider(t)
 	ctx := context.Background()
 	id := "clientId"
 
-	mockPaypal.EXPECT().RefundCapture(ctx, id, paypal.RefundCaptureRequest{}).Return(&paypal.RefundResponse{
-		ID: id,
-	}, nil).Once()
+	mockPaypal.EXPECT().CaptureOrder(ctx, id, paypal.CaptureOrderRequest{}).Return(nil, fmt.Errorf("error")).Once()
 
 	paypalProvider := NewPaypalProvider(mockPaypal)
 
-	paypalProvider.CreateRefund(ctx, vo.CreateRefundOrder{
+	_, err := paypalProvider.CaptureOrder(ctx, vo.CaptureOrder{
+		OrderId:      id,
+		ProviderType: shared_domain.ProviderType_Paypal,
+	})
+	r.Error(err)
+}
+
+func TestPaypalProviderCreateRefund(t *testing.T) {
+	r := require.New(t)
+	mockPaypal := mockProvider.NewMockPaypalProvider(t)
+	ctx := context.Background()
+	id := "clientId"
+	refundResponse := &paypal.RefundResponse{
+		ID: id,
+	}
+	payload, _ := json.Marshal(refundResponse)
+	expected := vo.CreateRefundDetail{
+		RefundOrderId: id,
+		ProviderType:  shared_domain.ProviderType_Paypal,
+		Payload:       string(payload),
+	}
+
+	mockPaypal.EXPECT().RefundCapture(ctx, id, paypal.RefundCaptureRequest{}).Return(refundResponse, nil).Once()
+
+	paypalProvider := NewPaypalProvider(mockPaypal)
+
+	result, err := paypalProvider.CreateRefund(ctx, vo.CreateRefundOrder{
 		CaptureOrderId: id,
 		ProviderType:   shared_domain.ProviderType_Paypal,
 	})
+
+	r.NoError(err)
+	r.Equal(expected, result)
+}
+
+func TestPaypalProviderCreateRefundFail(t *testing.T) {
+	r := require.New(t)
+	mockPaypal := mockProvider.NewMockPaypalProvider(t)
+	ctx := context.Background()
+	id := "clientId"
+
+	mockPaypal.EXPECT().RefundCapture(ctx, id, paypal.RefundCaptureRequest{}).Return(nil, fmt.Errorf("error")).Once()
+
+	paypalProvider := NewPaypalProvider(mockPaypal)
+
+	_, err := paypalProvider.CreateRefund(ctx, vo.CreateRefundOrder{
+		CaptureOrderId: id,
+		ProviderType:   shared_domain.ProviderType_Paypal,
+	})
+
+	r.Error(err)
 }
 
 func TestParsePaypalCurrency(t *testing.T) {

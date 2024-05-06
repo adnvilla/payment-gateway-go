@@ -72,8 +72,15 @@ func (s *stripeProvider) CaptureOrder(ctx context.Context, captureOrder vo.Captu
 		return vo.CaptureOrderDetail{}, err
 	}
 
+	payload, err := json.Marshal(result)
+	if err != nil {
+		return vo.CaptureOrderDetail{}, err
+	}
+
 	return vo.CaptureOrderDetail{
 		CaptureOrderId: result.ID,
+		Payload:        string(payload),
+		ProviderType:   captureOrder.ProviderType,
 	}, nil
 }
 
@@ -87,8 +94,14 @@ func (s *stripeProvider) CreateRefund(ctx context.Context, captureOrder vo.Creat
 		return vo.CreateRefundDetail{}, err
 	}
 
+	payload, err := json.Marshal(result)
+	if err != nil {
+		return vo.CreateRefundDetail{}, err
+	}
+
 	return vo.CreateRefundDetail{
 		RefundOrderId: result.ID,
+		Payload:       string(payload),
 	}, nil
 }
 

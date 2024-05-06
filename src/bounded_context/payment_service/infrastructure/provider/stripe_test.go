@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/adnvilla/payment-gateway-go/src/pkg/shared_domain"
 	stripewrap "github.com/adnvilla/payment-gateway-go/src/pkg/stripe"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/stripe/mock"
+	"github.com/stretchr/testify/require"
 	"github.com/stripe/stripe-go/v78"
 	"github.com/stripe/stripe-go/v78/paymentintent"
 	"github.com/stripe/stripe-go/v78/refund"
@@ -16,6 +18,52 @@ import (
 )
 
 func TestStripeProviderCreateOrder(t *testing.T) {
+	r := require.New(t)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+	// Create a mock stripe backend
+	mockBackend := mock.NewMockBackend(mockController)
+	c := &paymentintent.Client{B: mockBackend, Key: "key_123"}
+
+	amount := "152"
+	currency := "mxn"
+	paymentIntent := stripe.PaymentIntent{
+		ID:       "int_123",
+		Amount:   152,
+		Currency: stripe.CurrencyMXN,
+	}
+	payload, _ := json.Marshal(paymentIntent)
+
+	expected := vo.CreateOrderDetail{
+		OrderId:      "int_123",
+		Amount:       amount,
+		Currency:     currency,
+		ProviderType: shared_domain.ProviderType_Stripe,
+		Payload:      string(payload),
+	}
+	// Set up a mock call
+	mockBackend.EXPECT().Call("POST", "/v1/payment_intents", gomock.Any(), gomock.Any(), gomock.Any()).
+		// Return nil error
+		Return(nil).
+		Do(func(method string, path string, key string, params stripe.ParamsContainer, v *stripe.PaymentIntent) {
+			// Set the return value for the method
+			*v = paymentIntent
+		}).Times(1)
+
+	stripeProvider := NewStripeProvider(stripewrap.NewWrapStripeProviderWithClients("", c, nil))
+
+	result, err := stripeProvider.CreateOrder(context.Background(), vo.CreateOrder{
+		ProviderType: shared_domain.ProviderType_Stripe,
+		Amount:       amount,
+		Currency:     currency,
+	})
+
+	r.NoError(err)
+	r.Equal(expected, result)
+}
+
+func TestStripeProviderCreateOrderFail(t *testing.T) {
+	r := require.New(t)
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 	// Create a mock stripe backend
@@ -25,24 +73,96 @@ func TestStripeProviderCreateOrder(t *testing.T) {
 	// Set up a mock call
 	mockBackend.EXPECT().Call("POST", "/v1/payment_intents", gomock.Any(), gomock.Any(), gomock.Any()).
 		// Return nil error
-		Return(nil).
-		Do(func(method string, path string, key string, params stripe.ParamsContainer, v *stripe.PaymentIntent) {
-			// Set the return value for the method
-			*v = stripe.PaymentIntent{
-				ID: "int_123",
-			}
-		}).Times(1)
+		Return(fmt.Errorf("error")).Times(1)
 
 	stripeProvider := NewStripeProvider(stripewrap.NewWrapStripeProviderWithClients("", c, nil))
 
-	stripeProvider.CreateOrder(context.Background(), vo.CreateOrder{
+	_, err := stripeProvider.CreateOrder(context.Background(), vo.CreateOrder{
 		Amount:       "152",
 		Currency:     "MXN",
 		ProviderType: shared_domain.ProviderType_Stripe,
 	})
+
+	r.Error(err)
+}
+
+func TestStripeProviderCreateOrderAmountFail(t *testing.T) {
+	r := require.New(t)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+	// Create a mock stripe backend
+	mockBackend := mock.NewMockBackend(mockController)
+	c := &paymentintent.Client{B: mockBackend, Key: "key_123"}
+
+	stripeProvider := NewStripeProvider(stripewrap.NewWrapStripeProviderWithClients("", c, nil))
+
+	_, err := stripeProvider.CreateOrder(context.Background(), vo.CreateOrder{
+		Amount:       "152a",
+		Currency:     "MXN",
+		ProviderType: shared_domain.ProviderType_Stripe,
+	})
+
+	r.Error(err)
+}
+
+func TestStripeProviderCreateOrderCurrencyFail(t *testing.T) {
+	r := require.New(t)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+	// Create a mock stripe backend
+	mockBackend := mock.NewMockBackend(mockController)
+	c := &paymentintent.Client{B: mockBackend, Key: "key_123"}
+
+	stripeProvider := NewStripeProvider(stripewrap.NewWrapStripeProviderWithClients("", c, nil))
+
+	_, err := stripeProvider.CreateOrder(context.Background(), vo.CreateOrder{
+		Amount:       "152",
+		Currency:     "COP",
+		ProviderType: shared_domain.ProviderType_Stripe,
+	})
+	r.Error(err)
 }
 
 func TestStripeProviderCaptureOrder(t *testing.T) {
+	r := require.New(t)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+	// Create a mock stripe backend
+	mockBackend := mock.NewMockBackend(mockController)
+	c := &paymentintent.Client{B: mockBackend, Key: "key_123"}
+	id := "clientId"
+	paymentIntent := stripe.PaymentIntent{
+		ID: id,
+	}
+	payload, _ := json.Marshal(paymentIntent)
+	expected := vo.CaptureOrderDetail{
+		CaptureOrderId: id,
+		ProviderType:   shared_domain.ProviderType_Stripe,
+		Payload:        string(payload),
+	}
+
+	// Set up a mock call
+	mockBackend.EXPECT().Call("POST", fmt.Sprintf("/v1/payment_intents/%s/capture", id), gomock.Any(), gomock.Any(), gomock.Any()).
+		// Return nil error
+		Return(nil).
+		Do(func(method string, path string, key string, params stripe.ParamsContainer, v *stripe.PaymentIntent) {
+			// Set the return value for the method
+			*v = paymentIntent
+		}).Times(1)
+
+	stripeProvider := NewStripeProvider(stripewrap.NewWrapStripeProviderWithClients("", c, nil))
+
+	result, err := stripeProvider.CaptureOrder(context.Background(), vo.CaptureOrder{
+		OrderId:      id,
+		ProviderType: shared_domain.ProviderType_Stripe,
+	})
+
+	r.NoError(err)
+	r.Equal(expected, result)
+}
+
+func TestStripeProviderCaptureOrderFail(t *testing.T) {
+	r := require.New(t)
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 	// Create a mock stripe backend
@@ -53,20 +173,16 @@ func TestStripeProviderCaptureOrder(t *testing.T) {
 	// Set up a mock call
 	mockBackend.EXPECT().Call("POST", fmt.Sprintf("/v1/payment_intents/%s/capture", id), gomock.Any(), gomock.Any(), gomock.Any()).
 		// Return nil error
-		Return(nil).
-		Do(func(method string, path string, key string, params stripe.ParamsContainer, v *stripe.PaymentIntent) {
-			// Set the return value for the method
-			*v = stripe.PaymentIntent{
-				ID: id,
-			}
-		}).Times(1)
+		Return(fmt.Errorf("error")).Times(1)
 
 	stripeProvider := NewStripeProvider(stripewrap.NewWrapStripeProviderWithClients("", c, nil))
 
-	stripeProvider.CaptureOrder(context.Background(), vo.CaptureOrder{
+	_, err := stripeProvider.CaptureOrder(context.Background(), vo.CaptureOrder{
 		OrderId:      id,
 		ProviderType: shared_domain.ProviderType_Stripe,
 	})
+
+	r.Error(err)
 }
 
 func TestStripeProviderCreateRefund(t *testing.T) {
@@ -94,6 +210,30 @@ func TestStripeProviderCreateRefund(t *testing.T) {
 		CaptureOrderId: id,
 		ProviderType:   shared_domain.ProviderType_Stripe,
 	})
+}
+
+func TestStripeProviderCreateRefundFail(t *testing.T) {
+	r := require.New(t)
+	mockController := gomock.NewController(t)
+	defer mockController.Finish()
+	// Create a mock stripe backend
+	mockBackend := mock.NewMockBackend(mockController)
+	c := &refund.Client{B: mockBackend, Key: "key_123"}
+	id := "clientId"
+
+	// Set up a mock call
+	mockBackend.EXPECT().Call("POST", "/v1/refunds", gomock.Any(), gomock.Any(), gomock.Any()).
+		// Return nil error
+		Return(fmt.Errorf("error")).Times(1)
+
+	stripeProvider := NewStripeProvider(stripewrap.NewWrapStripeProviderWithClients("key_123", nil, c))
+
+	_, err := stripeProvider.CreateRefund(context.Background(), vo.CreateRefundOrder{
+		CaptureOrderId: id,
+		ProviderType:   shared_domain.ProviderType_Stripe,
+	})
+
+	r.Error(err)
 }
 
 func TestParseCurrency(t *testing.T) {
@@ -124,5 +264,4 @@ func TestParseCurrency(t *testing.T) {
 			}
 		})
 	}
-
 }
