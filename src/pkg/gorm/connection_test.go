@@ -6,6 +6,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -62,4 +63,22 @@ func TestVerifyBeforeCreateIsExecute(t *testing.T) {
 	}
 
 	assert.NotEmpty(t, user.ID)
+}
+
+func TestResetConnection(t *testing.T) {
+	r := require.New(t)
+	os.Setenv("PAYMENT_GATEWAY_POSTGRES_HOST", "1")
+	os.Setenv("PAYMENT_GATEWAY_POSTGRES_PORT", "1")
+	os.Setenv("PAYMENT_GATEWAY_POSTGRES_USER", "q")
+	os.Setenv("PAYMENT_GATEWAY_POSTGRES_PASSWORD", "s")
+	os.Setenv("PAYMENT_GATEWAY_POSTGRES_DBNAME", "t")
+
+	ResetConnection()
+	con := GetConnection().Instance
+
+	ResetConnection()
+	con2 := GetConnection().Instance
+
+	r.NotNil(con)
+	r.NotSame(con, con2)
 }
