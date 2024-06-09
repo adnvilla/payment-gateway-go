@@ -6,20 +6,16 @@ import (
 	"net/http"
 
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/application/usecase"
+	"github.com/adnvilla/payment-gateway-go/src/pkg/dispatcher"
 	errorshandle "github.com/adnvilla/payment-gateway-go/src/pkg/errors_handle"
-	"github.com/adnvilla/payment-gateway-go/src/pkg/use_case"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 )
 
-type GetOrderHandler struct {
-	usecase use_case.UseCase[usecase.GetOrderInput, usecase.GetOrderOutput]
-}
+type GetOrderHandler struct{}
 
-func NewGetOrderHandler(usecase use_case.UseCase[usecase.GetOrderInput, usecase.GetOrderOutput]) GetOrderHandler {
-	return GetOrderHandler{
-		usecase: usecase,
-	}
+func NewGetOrderHandler() GetOrderHandler {
+	return GetOrderHandler{}
 }
 
 func (handler *GetOrderHandler) GetOrder(c *gin.Context) {
@@ -44,7 +40,7 @@ func (handler *GetOrderHandler) GetOrder(c *gin.Context) {
 		Id: id,
 	}
 
-	result, err := handler.usecase.Handle(c, input)
+	result, err := dispatcher.Send[usecase.GetOrderInput, usecase.GetOrderOutput](c, input)
 
 	if err != nil {
 		// Errs it will be customize with handle errors

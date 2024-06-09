@@ -6,20 +6,16 @@ import (
 	"net/http"
 
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/application/usecase"
+	"github.com/adnvilla/payment-gateway-go/src/pkg/dispatcher"
 	errorshandle "github.com/adnvilla/payment-gateway-go/src/pkg/errors_handle"
-	"github.com/adnvilla/payment-gateway-go/src/pkg/use_case"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 )
 
-type CaptureOrderHandler struct {
-	usecase use_case.UseCase[usecase.CaptureOrderInput, usecase.CaptureOrderOutput]
-}
+type CaptureOrderHandler struct{}
 
-func NewCaptureOrderHandler(usecase use_case.UseCase[usecase.CaptureOrderInput, usecase.CaptureOrderOutput]) CaptureOrderHandler {
-	return CaptureOrderHandler{
-		usecase: usecase,
-	}
+func NewCaptureOrderHandler() CaptureOrderHandler {
+	return CaptureOrderHandler{}
 }
 
 func (handler *CaptureOrderHandler) CaptureOrder(c *gin.Context) {
@@ -44,7 +40,7 @@ func (handler *CaptureOrderHandler) CaptureOrder(c *gin.Context) {
 		OrderId: id,
 	}
 
-	result, err := handler.usecase.Handle(c, input)
+	result, err := dispatcher.Send[usecase.CaptureOrderInput, usecase.CaptureOrderOutput](c, input)
 
 	if err != nil {
 		// Errs it will be customize with handle errors

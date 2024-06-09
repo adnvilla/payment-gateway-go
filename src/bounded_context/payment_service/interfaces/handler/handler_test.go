@@ -11,6 +11,7 @@ import (
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/application/usecase"
 	usecasemock "github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/application/usecase/mock"
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/interfaces/dto"
+	"github.com/adnvilla/payment-gateway-go/src/pkg/dispatcher"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/testutils"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
@@ -33,8 +34,11 @@ func TestCreateOrder(t *testing.T) {
 	usecaseMock := usecasemock.NewMockCreateOrderUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateOrderOutput{}, nil)
 
+	dispatcher.Reset()
+	dispatcher.RegisterHandler(usecaseMock)
+
 	// Act
-	handler := NewCreateOrderHandler(usecaseMock)
+	handler := NewCreateOrderHandler()
 	handler.CreateOrder(ctx)
 
 	// Assert
@@ -57,7 +61,7 @@ func TestCreateOrderFailBody(t *testing.T) {
 	testutils.MockJsonPost(ctx, body, nil, nil)
 
 	// Act
-	handler := NewCreateOrderHandler(nil)
+	handler := NewCreateOrderHandler()
 	handler.CreateOrder(ctx)
 
 	// Assert
@@ -82,8 +86,11 @@ func TestCreateOrderHandleFail(t *testing.T) {
 	usecaseMock := usecasemock.NewMockCreateOrderUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateOrderOutput{}, fmt.Errorf("some error"))
 
+	dispatcher.Reset()
+	dispatcher.RegisterHandler(usecaseMock)
+
 	// Act
-	handler := NewCreateOrderHandler(usecaseMock)
+	handler := NewCreateOrderHandler()
 	handler.CreateOrder(ctx)
 
 	// Assert
@@ -119,8 +126,11 @@ func TestCaptureOrder(t *testing.T) {
 		Id: id,
 	}, nil)
 
+	dispatcher.Reset()
+	dispatcher.RegisterHandler(usecaseMock)
+
 	// Act
-	handler := NewCaptureOrderHandler(usecaseMock)
+	handler := NewCaptureOrderHandler()
 	handler.CaptureOrder(ctx)
 
 	// Assert
@@ -149,7 +159,7 @@ func TestCaptureOrderFailParameter(t *testing.T) {
 	}
 
 	// Act
-	handler := NewCaptureOrderHandler(nil)
+	handler := NewCaptureOrderHandler()
 	handler.CaptureOrder(ctx)
 
 	// Assert
@@ -181,8 +191,11 @@ func TestCaptureOrderHanldeFail(t *testing.T) {
 	usecaseMock := usecasemock.NewMockCaptureOrderUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CaptureOrderOutput{}, fmt.Errorf("some error"))
 
+	dispatcher.Reset()
+	dispatcher.RegisterHandler(usecaseMock)
+
 	// Act
-	handler := NewCaptureOrderHandler(usecaseMock)
+	handler := NewCaptureOrderHandler()
 	handler.CaptureOrder(ctx)
 
 	// Assert
@@ -211,7 +224,7 @@ func TestCaptureOrderFailParameterId(t *testing.T) {
 	testutils.MockJsonPost(ctx, body, nil, nil)
 
 	// Act
-	handler := NewCaptureOrderHandler(nil)
+	handler := NewCaptureOrderHandler()
 	handler.CaptureOrder(ctx)
 
 	// Assert
@@ -243,8 +256,11 @@ func TestCreateRefund(t *testing.T) {
 	usecaseMock := usecasemock.NewMockCreateRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateRefundOutput{}, nil)
 
+	dispatcher.Reset()
+	dispatcher.RegisterHandler(usecaseMock)
+
 	// Act
-	handler := NewCreateRefundHandler(usecaseMock)
+	handler := NewCreateRefundHandler()
 	handler.CreateRefund(ctx)
 
 	// Assert
@@ -276,8 +292,11 @@ func TestCreateRefundHandleFail(t *testing.T) {
 	usecaseMock := usecasemock.NewMockCreateRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.CreateRefundOutput{}, fmt.Errorf("some error"))
 
+	dispatcher.Reset()
+	dispatcher.RegisterHandler(usecaseMock)
+
 	// Act
-	handler := NewCreateRefundHandler(usecaseMock)
+	handler := NewCreateRefundHandler()
 	handler.CreateRefund(ctx)
 
 	// Assert
@@ -306,7 +325,7 @@ func TestCreateRefundFailParameterId(t *testing.T) {
 	testutils.MockJsonPost(ctx, body, nil, nil)
 
 	// Act
-	handler := NewCreateRefundHandler(nil)
+	handler := NewCreateRefundHandler()
 	handler.CreateRefund(ctx)
 
 	// Assert
@@ -329,7 +348,7 @@ func TestCreateRefundFailParameter(t *testing.T) {
 	testutils.MockJsonPost(ctx, body, nil, nil)
 
 	// Act
-	handler := NewCreateRefundHandler(nil)
+	handler := NewCreateRefundHandler()
 	handler.CreateRefund(ctx)
 
 	// Assert
@@ -356,8 +375,11 @@ func TestGetRefund(t *testing.T) {
 	usecaseMock := usecasemock.NewMockGetRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetRefundOutput{}, nil)
 
+	dispatcher.Reset()
+	dispatcher.RegisterHandler(usecaseMock)
+
 	// Act
-	handler := NewGetRefundHandler(usecaseMock)
+	handler := NewGetRefundHandler()
 	handler.GetRefund(ctx)
 
 	// Assert
@@ -384,8 +406,11 @@ func TestGetRefundHanldeFail(t *testing.T) {
 	usecaseMock := usecasemock.NewMockGetRefundUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetRefundOutput{}, fmt.Errorf("some error"))
 
+	dispatcher.Reset()
+	dispatcher.RegisterHandler(usecaseMock)
+
 	// Act
-	handler := NewGetRefundHandler(usecaseMock)
+	handler := NewGetRefundHandler()
 	handler.GetRefund(ctx)
 
 	// Assert
@@ -420,8 +445,11 @@ func TestGetOrder(t *testing.T) {
 		Id: id,
 	}, nil)
 
+	dispatcher.Reset()
+	dispatcher.RegisterHandler(usecaseMock)
+
 	// Act
-	handler := NewGetOrderHandler(usecaseMock)
+	handler := NewGetOrderHandler()
 	handler.GetOrder(ctx)
 
 	// Assert
@@ -452,8 +480,11 @@ func TestGetOrderHanldeFail(t *testing.T) {
 	usecaseMock := usecasemock.NewMockGetOrderUseCase(t)
 	usecaseMock.On("Handle", mock.Anything, mock.Anything).Return(usecase.GetOrderOutput{}, fmt.Errorf("some error"))
 
+	dispatcher.Reset()
+	dispatcher.RegisterHandler(usecaseMock)
+
 	// Act
-	handler := NewGetOrderHandler(usecaseMock)
+	handler := NewGetOrderHandler()
 	handler.GetOrder(ctx)
 
 	// Assert
@@ -481,7 +512,7 @@ func TestGetOrderFailParameter(t *testing.T) {
 	testutils.MockJsonGet(ctx, params, nil)
 
 	// Act
-	handler := NewGetOrderHandler(nil)
+	handler := NewGetOrderHandler()
 	handler.GetOrder(ctx)
 
 	// Assert
@@ -509,7 +540,7 @@ func TestGetOrderFailParameterId(t *testing.T) {
 	testutils.MockJsonGet(ctx, params, nil)
 
 	// Act
-	handler := NewGetOrderHandler(nil)
+	handler := NewGetOrderHandler()
 	handler.GetOrder(ctx)
 
 	// Assert

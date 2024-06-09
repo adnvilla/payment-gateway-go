@@ -6,6 +6,7 @@ import (
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/infrastructure/provider"
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/infrastructure/sql/postgresql"
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/interfaces/handler"
+	"github.com/adnvilla/payment-gateway-go/src/pkg/dispatcher"
 	"github.com/adnvilla/payment-gateway-go/src/pkg/gorm"
 
 	"github.com/gin-contrib/cors"
@@ -50,12 +51,18 @@ func initializeEndpoints(routerV1 *gin.RouterGroup) {
 	createRefundUsecase := usecase.NewCreateRefundUseCase(service, repository)
 	getRefundUseCase := usecase.NewGetRefundUseCase()
 
-	paymentCreateOrderHandler := handler.NewCreateOrderHandler(createOrderUsecase)
-	paymentCaptureOrderHandler := handler.NewCaptureOrderHandler(captureOrderUsecase)
-	paymentGetOrderHandler := handler.NewGetOrderHandler(getOrderUsecase)
+	paymentCreateOrderHandler := handler.NewCreateOrderHandler()
+	paymentCaptureOrderHandler := handler.NewCaptureOrderHandler()
+	paymentGetOrderHandler := handler.NewGetOrderHandler()
 
-	refundCreateRefundHandler := handler.NewCreateRefundHandler(createRefundUsecase)
-	refundGetRefundHandler := handler.NewGetRefundHandler(getRefundUseCase)
+	refundCreateRefundHandler := handler.NewCreateRefundHandler()
+	refundGetRefundHandler := handler.NewGetRefundHandler()
+
+	dispatcher.RegisterHandler(createOrderUsecase)
+	dispatcher.RegisterHandler(captureOrderUsecase)
+	dispatcher.RegisterHandler(getOrderUsecase)
+	dispatcher.RegisterHandler(createRefundUsecase)
+	dispatcher.RegisterHandler(getRefundUseCase)
 
 	// Payments
 	routerV1.POST("/payments", paymentCreateOrderHandler.CreateOrder)

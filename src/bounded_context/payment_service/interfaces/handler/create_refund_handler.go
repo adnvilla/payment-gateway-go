@@ -6,20 +6,16 @@ import (
 	"net/http"
 
 	"github.com/adnvilla/payment-gateway-go/src/bounded_context/payment_service/application/usecase"
+	"github.com/adnvilla/payment-gateway-go/src/pkg/dispatcher"
 	errorshandle "github.com/adnvilla/payment-gateway-go/src/pkg/errors_handle"
-	"github.com/adnvilla/payment-gateway-go/src/pkg/use_case"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 )
 
-type CreateRefundHandler struct {
-	usecase use_case.UseCase[usecase.CreateRefundInput, usecase.CreateRefundOutput]
-}
+type CreateRefundHandler struct{}
 
-func NewCreateRefundHandler(usecase use_case.UseCase[usecase.CreateRefundInput, usecase.CreateRefundOutput]) CreateRefundHandler {
-	return CreateRefundHandler{
-		usecase: usecase,
-	}
+func NewCreateRefundHandler() CreateRefundHandler {
+	return CreateRefundHandler{}
 }
 
 func (handler *CreateRefundHandler) CreateRefund(c *gin.Context) {
@@ -44,7 +40,7 @@ func (handler *CreateRefundHandler) CreateRefund(c *gin.Context) {
 		CaptureOrderId: id,
 	}
 
-	result, err := handler.usecase.Handle(c, input)
+	result, err := dispatcher.Send[usecase.CreateRefundInput, usecase.CreateRefundOutput](c, input)
 
 	if err != nil {
 		// Errs it will be customize with handle errors
